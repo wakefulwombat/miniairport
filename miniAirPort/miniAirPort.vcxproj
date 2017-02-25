@@ -11,7 +11,34 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\base_sceneBase.cpp" />
+    <ClCompile Include="src\button.cpp" />
+    <ClCompile Include="src\camera.cpp" />
+    <ClCompile Include="src\common.cpp" />
+    <ClCompile Include="src\input.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\mousePointer.cpp" />
+    <ClCompile Include="src\plane.cpp" />
+    <ClCompile Include="src\resource.cpp" />
+    <ClCompile Include="src\scene_gameMain.cpp" />
+    <ClCompile Include="src\scene_manager.cpp" />
+    <ClCompile Include="src\world.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\base_externalObjectController.h" />
+    <ClInclude Include="src\base_internalObjectController.h" />
+    <ClInclude Include="src\base_objectBase.h" />
+    <ClInclude Include="src\base_sceneBase.h" />
+    <ClInclude Include="src\button.h" />
+    <ClInclude Include="src\camera.h" />
+    <ClInclude Include="src\common.h" />
+    <ClInclude Include="src\input.h" />
+    <ClInclude Include="src\world.h" />
+    <ClInclude Include="src\mousePointer.h" />
+    <ClInclude Include="src\plane.h" />
+    <ClInclude Include="src\resource.h" />
+    <ClInclude Include="src\scene_gameMain.h" />
+    <ClInclude Include="src\scene_manager.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{D7DA6774-1282-4C97-A621-9F116C9A90D9}</ProjectGuid>

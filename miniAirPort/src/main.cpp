@@ -1,4 +1,8 @@
 #include "DxLib.h"
+#include "scene_manager.h"
+#include "resource.h"
+#include "input.h"
+#include <memory>
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
@@ -14,29 +18,31 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	//}
 	
 
-	SetGraphMode(640, 480, 16);
+	SetGraphMode(1280, 720, 16);
 	SetDrawMode(DX_DRAWMODE_BILINEAR);
-	SetWindowText("");
+	SetWindowText("Mini-AirPort");
 
 
 	if (DxLib_Init() == -1) return -1;
-
-
 	SetDrawScreen(DX_SCREEN_BACK);
 
+	Resources::initialize();
+	Input::initialize();
+	std::shared_ptr<SceneManager> mgr = std::make_shared<SceneManager>(Size(1280, 720));
 
 	while (1) {
 		ClearDrawScreen();
 
+		Input::update();
+		mgr->update();
 
 		ScreenFlip();
 
 		if (ProcessMessage() == -1) break;
 	}
 
-
-	//#ifndef _DEBUG
+	mgr->finalize();
 	DxLib_End();
-	//#endif
+
 	return 0;
 }
