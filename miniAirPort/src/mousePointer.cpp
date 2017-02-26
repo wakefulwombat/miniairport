@@ -3,7 +3,7 @@
 #include "resource.h"
 #include <math.h>
 
-MousePointer::MousePointer() : ObjectBase(Input::getNowMousePoint(), 100000, std::make_shared<InternalObjectController_None>()), ImageProperty(std::make_shared<ImagePropertyData>(Size(32, 32))) {
+MousePointer::MousePointer() : ObjectBase(Input_T::getOperationInterface_mouse()->getPointerPosition(), 100000, std::make_shared<InternalObjectController_None>()), ImageProperty(std::make_shared<ImagePropertyData>(Size(32, 32))) {
 	this->initialize();
 }
 
@@ -21,10 +21,11 @@ void MousePointer::update() {
 			this->move_rocked = false;
 			this->world_pos = this->rock_moveEnd;
 		}
-		Input::setNowMousePoint(this->world_pos);
+		
+		Input_T::getOperationInterface_mouse()->setPointerPosition(this->world_pos);
 	}
 	else {
-		this->world_pos = Input::getNowMousePoint();
+		this->world_pos = Input_T::getOperationInterface_mouse()->getPointerPosition();
 	}
 }
 
@@ -35,11 +36,11 @@ void MousePointer::draw(const std::shared_ptr<CameraDrawInterface> &camera) cons
 }
 
 void MousePointer::rememberHide() {
-	this->remember_pos = Input::getNowMousePoint();
+	this->remember_pos = Input_T::getOperationInterface_mouse()->getPointerPosition();
 	this->validation = false;
 }
 
 void MousePointer::rememberShow() {
-	Input::setNowMousePoint(this->remember_pos);
+	Input_T::getOperationInterface_mouse()->setPointerPosition(this->world_pos);
 	this->validation = true;
 }

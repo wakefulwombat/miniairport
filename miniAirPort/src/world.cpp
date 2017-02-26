@@ -1,4 +1,5 @@
 #include "world.h"
+#include "input.h"
 #include <fstream>
 #include <sstream>
 #include <string>
@@ -57,4 +58,30 @@ void World::loadStageChip(int stage) {
 				));
 		}
 	}
+}
+
+void World::update() {
+	if (Input_T::getEventInterface_mouse()->isDownOnce("left") || Input_T::getEventInterface_mouse()->isUpOnce("left")) {
+		this->camera->setAnchorWorldPosition(this->camera->toWorldPosFromWindowPosPx(Input_T::getOperationInterface_mouse()->getPointerPosition()));
+	}
+	if (Input_T::getEventInterface_mouse()->isDown("left")) {
+		this->camera->setAnchorWindowPosition(Input_T::getOperationInterface_mouse()->getPointerPosition());
+	}
+	
+	int wheel = Input_T::getOperationInterface_mouse()->getWheelRotationDelta();
+	if (wheel != 0) {
+		this->camera->setAnchorWorldPosition(this->camera->toWorldPosFromWindowPosPx(Input_T::getOperationInterface_mouse()->getPointerPosition()));
+		this->camera->setAnchorWindowPosition(Input_T::getOperationInterface_mouse()->getPointerPosition());
+		this->camera->setZoom((1.0 + 0.3*wheel)*this->camera->getZoom(), 10);
+	}
+	
+	if (Input_T::getEventInterface_mouse()->isKeepDown("middle", 60)) {
+		//ƒ|[ƒY‰æ–Ê	
+	}
+	if (Input_T::getEventInterface_mouse()->isUpOnce("middle")) {
+		this->camera->setAnchorWorldPosition((this->getWorldSizePixel() / 2).toVec());
+		this->camera->setAnchorWindowPosition((this->camera->getWindowPixelSize() / 2).toVec());
+	}
+
+	LayerBase::update();
 }

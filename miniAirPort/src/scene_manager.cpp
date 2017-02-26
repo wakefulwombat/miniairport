@@ -1,10 +1,15 @@
 #include "scene_manager.h"
 #include "scene_gameMain.h"
 #include "base_sceneBase.h"
+#include "input.h"
 #include <deque>
 
 SceneManager::SceneManager(Size screenSize) : SceneCommonData(screenSize) {
 	this->initialize();
+
+	Input_T::getOperationInterface_mouse()->addKeyListener("left", MOUSE_INPUT_LEFT);
+	Input_T::getOperationInterface_mouse()->addKeyListener("right", MOUSE_INPUT_RIGHT);
+	Input_T::getOperationInterface_mouse()->addKeyListener("middle", MOUSE_INPUT_MIDDLE);
 }
 
 void SceneManager::initialize() {

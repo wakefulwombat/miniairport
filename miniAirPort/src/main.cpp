@@ -25,15 +25,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	if (DxLib_Init() == -1) return -1;
 	SetDrawScreen(DX_SCREEN_BACK);
+	SetMouseDispFlag(false);
 
 	Resources::initialize();
-	Input::initialize();
+	Input_T::initialize();
 	std::shared_ptr<SceneManager> mgr = std::make_shared<SceneManager>(Size(1280, 720));
 
 	while (1) {
 		ClearDrawScreen();
 
-		Input::update();
+		Input_T::update();
 		mgr->update();
 
 		ScreenFlip();

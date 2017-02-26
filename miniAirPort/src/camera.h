@@ -83,10 +83,12 @@ public:
 	void setZoom(double zoom, int count);
 	void setZoomAdd(double zoom_add, int count);
 	void setZoomReset(int count);
+	double getZoom() { return this->zoom_magnification_now; }
 
 	void setRotation(double angle_rad);
 	void setRotation(double angle_rad, int count);
 	void setRotationAdd(double angle_rad_add, int count);
+	double getRotation() { return this->rotate_angle_now; }
 
 	void setSwayRandomInSquare(int pow, int count_max, int update_time);
 	void setSwayVibrationDecaying(int pow, int count_max, double trans_rad, int rot_freq);
@@ -116,7 +118,9 @@ public:
 
 	void update();
 
+	void setWorldSize(Size size) { this->worldSize = size; }
 	Size getWorldSize() { return this->worldSize; }
+	Size getWindowPixelSize() { return this->windowPixelSize; }
 
 	Vec2D toWindowPosPxFromWorldPos(Vec2D world_pos) { return (this->pos_anchor_window + Mat2D::rotation(-this->rotate_angle_now, (world_pos - this->pos_anchor_world_now)*this->zoom_magnification_now)); }
 	Vec2D toWorldPosFromWindowPosPx(Vec2D window_pos) { return (this->pos_anchor_world_now + Mat2D::rotation(this->rotate_angle_now, (window_pos - this->pos_anchor_window) / this->zoom_magnification_now)); }

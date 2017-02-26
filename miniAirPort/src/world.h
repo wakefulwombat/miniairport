@@ -29,7 +29,8 @@ private:
 	void loadStageChip(int stage);
 
 public:
-	World(int stage) : LayerBase(0.0, false, std::make_shared<Camera>(Size(1280, 720))) { this->initialize(); this->loadStageInfo(stage); this->loadStageChip(stage); }
+	World(int stage) : LayerBase(0.0, false, std::make_shared<Camera>(Size(1280, 720))) { this->initialize(); this->loadStageInfo(stage); this->loadStageChip(stage); this->camera->setWorldSize(this->getWorldSizePixel()); }
 	void initialize() override {}
+	void update() override;
 	Size getWorldSizePixel() { return Size(this->chipSize_pixel.width*this->worldSize_chipNum.width, this->chipSize_pixel.height*this->worldSize_chipNum.height); }
 };

@@ -30,7 +30,7 @@ void Button::update() {
 
 	this->isHovered = true;
 
-	if (Input::getKeyCodeDownOnce(KeyType::Game_Swing_OK)) {
+	if (Input_T::getEventInterface_mouse()->isDownOnce("left")) {
 		this->isClicked = true;
 	}
 }
@@ -62,7 +62,7 @@ void RadioButton::update() {
 	if (mouse.x > this->world_pos.x + this->size.width / 2) return;
 	if (mouse.y > this->world_pos.y + this->size.height / 2) return;
 
-	if (Input::getKeyCodeDownOnce(KeyType::Game_Swing_OK)) {
+	if (Input_T::getEventInterface_mouse()->isDownOnce("left")) {
 		this->is_on = !this->is_on;
 	}
 }
