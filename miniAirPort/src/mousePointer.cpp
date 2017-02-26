@@ -3,7 +3,7 @@
 #include "resource.h"
 #include <math.h>
 
-MousePointer::MousePointer() : ObjectBase(Input_T::getOperationInterface_mouse()->getPointerPosition(), 100000, std::make_shared<InternalObjectController_None>()), ImageProperty(std::make_shared<ImagePropertyData>(Size(32, 32))) {
+MousePointer::MousePointer() : ObjectBase(Input_T::getOperationInterface_mouse()->getPointerPosition(), 1000000), ImageProperty(std::make_shared<ImagePropertyData>(Size(32, 32))) {
 	this->initialize();
 }
 

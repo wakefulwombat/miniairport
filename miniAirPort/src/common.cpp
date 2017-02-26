@@ -554,25 +554,31 @@ Color_HSV Color_HSV::rotate(int addAngle) {
 }
 
 
+std::string Time24::toString(std::string separator, bool show_sec) {
+	std::string res = "";
+	std::string s;
+
+	s = std::to_string(this->hour);
+	if (s.length() == 1) s = "0" + s;
+	res += s;
+	res += separator;
+
+	s = std::to_string(this->minute);
+	if (s.length() == 1) s = "0" + s;
+	res += s;
+
+	if (show_sec) {
+		res += separator;
+
+		s = std::to_string(this->second);
+		if (s.length() == 1) s = "0" + s;
+		res += s;
+	}
+
+	return res;
+}
+
 
 int Round(double x){
 	return (int)(x < 0.0 ? x - 0.4999 : x + 0.4999);
-}
-
-bool fileExistT(char* filepath) {
-	FILE* fp;
-	if ((fopen_s(&fp, filepath, "r")) != 0) {
-		return false;
-	}
-	fclose(fp);
-	return true;
-}
-
-bool fileExistB(char* filepath) {
-	FILE* fp;
-	if ((fopen_s(&fp, filepath, "rb")) != 0) {
-		return false;
-	}
-	fclose(fp);
-	return true;
 }

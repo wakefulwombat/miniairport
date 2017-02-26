@@ -1,5 +1,6 @@
 #pragma once
 #include "DxLib.h"
+#include <string>
 
 const static double M_PI = 3.14159265358979;
 
@@ -124,9 +125,27 @@ public:
 	Color_HSV rotate(int addAngle);
 };
 
+class Time24 {
+private:
+	void checkOverTime() { while (this->second >= 60) { this->second -= 60; this->minute++; } while (this->minute >= 60) { this->minute -= 60; this->hour++; } while (this->hour >= 24) { this->hour -= 24; this->day++; } }
+	void checkUnderTime() { while (this->second < 0) { this->second += 60; this->minute--; } while (this->minute < 0) { this->minute += 60; this->hour--; } while (this->hour < 0) { this->hour += 24; this->day--; } if (day < 0) { this->day = 0; this->hour = 0; this->minute = 0; this->second = 0; } }
+
+public:
+	int day;
+	int hour, minute, second;
+
+	Time24(int hour = 0, int minute = 0, int second = 0) { this->day = 0; this->hour = hour; this->minute = minute; this->second = second; this->checkOverTime(); this->checkUnderTime(); }
+	Time24 operator+(const Time24& obj) { this->day += obj.day; this->hour += obj.hour; this->minute += obj.minute; this->second += obj.second; this->checkOverTime(); }
+	Time24 operator-(const Time24& obj) { this->day -= obj.day; this->hour -= obj.hour; this->minute -= obj.minute; this->second -= obj.second; this->checkUnderTime(); }
+	bool operator<(const Time24& obj) { return this->toSecond() < obj.toSecond(); }
+	bool operator>(const Time24& obj) { return this->toSecond() > obj.toSecond(); }
+	long toSecond() const { return (24 * 60 * 60 * this->day + 60 * 60 * this->hour + 60 * this->minute + this->second); }
+	void addSecond(long sec) { if (sec >= 0) { this->second += sec; this->checkOverTime(); } else { this->second -= sec; this->checkUnderTime(); } }
+	void addMinute(long min) { if (min >= 0) { this->minute += min; this->checkOverTime(); } else { this->minute -= min; this->checkUnderTime(); } }
+	std::string toString(std::string separator = ":", bool show_sec = false);
+};
+
 int Round(double x);
-bool fileExistT(char* filepath);//テキスト
-bool fileExistB(char* filepath);//バイナリ
 
 class RequiredFunc {
 public:

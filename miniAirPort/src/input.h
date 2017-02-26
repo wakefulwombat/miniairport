@@ -105,6 +105,8 @@ public:
 	bool isUpOnce() { return this->up_counter == 1; }
 	bool isKeepDown(unsigned int time_min) { return this->down_counter >= time_min; }
 	bool isKeepUp(unsigned int time_min) { return this->up_counter >= time_min; }
+	bool isKeepDownOnce(unsigned int time) { return this->down_counter == time; }
+	bool isKeepUpOnce(unsigned int time) { return this->up_counter == time; }
 	bool isReDownInTime(unsigned int allow_time) { return ((this->down_counter == 1) && (this->re_down_time <= allow_time)); }//キーを離してから時間内に再び押す
 	bool isReUpInTime(unsigned int allow_time) { return ((this->up_counter == 1) && (this->re_up_time <= allow_time)); }//キーを押してから時間内に離す
 	bool isReDownWithinTime(unsigned int min_time, unsigned int max_time) { return ((this->down_counter == 1) && (this->re_down_time >= min_time) && (this->re_down_time <= max_time)); }
@@ -149,6 +151,8 @@ public:
 	bool isUpOnce(T_UserKeyID code) { if (this->return_all_false) return false; else return this->check_keys[code]->isUpOnce(); }
 	bool isKeepDown(T_UserKeyID code, unsigned int time_min) { if (this->return_all_false) return false; else return this->check_keys[code]->isKeepDown(time_min); }
 	bool isKeepUp(T_UserKeyID code, unsigned int time_min) { if (this->return_all_false) return false; else return this->check_keys[code]->isKeepUp(time_min); }
+	bool isKeepDownOnce(T_UserKeyID code, unsigned int time) { if (this->return_all_false) return false; else return this->check_keys[code]->isKeepDownOnce(time); }
+	bool isKeepUpOnce(T_UserKeyID code, unsigned int time) { if (this->return_all_false) return false; else return this->check_keys[code]->isKeepUpOnce(time); }
 	bool isReDownInTime(T_UserKeyID code, unsigned int allow_time) { if (this->return_all_false) return false; else return this->check_keys[code]->isReDownInTime(allow_time); }
 	bool isReUpInTime(T_UserKeyID code, unsigned int allow_time) { if (this->return_all_false) return false; else return this->check_keys[code]->isReUpInTime(allow_time); }
 	bool isReDownWithinTime(T_UserKeyID code, unsigned int min_time, unsigned int max_time) { if (this->return_all_false) return false; else return this->check_keys[code]->isReDownWithinTime(min_time, max_time); }
@@ -188,6 +192,8 @@ public:
 	virtual bool isUpOnce(T_UserKeyID code) = 0;
 	virtual bool isKeepDown(T_UserKeyID code, unsigned int time_min) = 0;
 	virtual bool isKeepUp(T_UserKeyID code, unsigned int time_min) = 0;
+	virtual bool isKeepDownOnce(T_UserKeyID code, unsigned int time) = 0;
+	virtual bool isKeepUpOnce(T_UserKeyID code, unsigned int time) = 0;
 	virtual bool isReDownInTime(T_UserKeyID code, unsigned int allow_time) = 0;
 	virtual bool isReUpInTime(T_UserKeyID code, unsigned int allow_time) = 0;
 	virtual bool isReDownWithinTime(T_UserKeyID code, unsigned int min_time, unsigned int max_time) = 0;
@@ -252,6 +258,8 @@ public:
 	bool isUpOnce(T_UserKeyID code) override { return this->key_mgr->isUpOnce(code); }
 	bool isKeepDown(T_UserKeyID code, unsigned int time_min) override { return this->key_mgr->isKeepDown(code, time_min); }
 	bool isKeepUp(T_UserKeyID code, unsigned int time_min) override { return this->key_mgr->isKeepUp(code, time_min); }
+	bool isKeepDownOnce(T_UserKeyID code, unsigned int time) override { return this->key_mgr->isKeepDownOnce(code, time); }
+	bool isKeepUpOnce(T_UserKeyID code, unsigned int time) override { return this->key_mgr->isKeepUpOnce(code, time); }
 	bool isReDownInTime(T_UserKeyID code, unsigned int allow_time) override { return this->key_mgr->isReDownInTime(code, allow_time); }
 	bool isReUpInTime(T_UserKeyID code, unsigned int allow_time) override { return this->key_mgr->isReUpInTime(code, allow_time); }
 	bool isReDownWithinTime(T_UserKeyID code, unsigned int min_time, unsigned int max_time) override { return this->key_mgr->isReDownWithinTime(code, min_time, max_time); }
@@ -370,6 +378,8 @@ public:
 	virtual bool isUpOnce(T_UserKeyID code) = 0;
 	virtual bool isKeepDown(T_UserKeyID code, unsigned int time_min) = 0;
 	virtual bool isKeepUp(T_UserKeyID code, unsigned int time_min) = 0;
+	virtual bool isKeepDownOnce(T_UserKeyID code, unsigned int time) = 0;
+	virtual bool isKeepUpOnce(T_UserKeyID code, unsigned int time) = 0;
 	virtual bool isReDownInTime(T_UserKeyID code, unsigned int allow_time) = 0;
 	virtual bool isReUpInTime(T_UserKeyID code, unsigned int allow_time) = 0;
 	virtual bool isReDownWithinTime(T_UserKeyID code, unsigned int min_time, unsigned int max_time) = 0;
@@ -496,6 +506,8 @@ public:
 	bool isUpOnce(T_UserKeyID code) override { return this->key_mgr->isUpOnce(code); }
 	bool isKeepDown(T_UserKeyID code, unsigned int time_min) override { return this->key_mgr->isKeepDown(code, time_min); }
 	bool isKeepUp(T_UserKeyID code, unsigned int time_min) override { return this->key_mgr->isKeepUp(code, time_min); }
+	bool isKeepDownOnce(T_UserKeyID code, unsigned int time) override { return this->key_mgr->isKeepDownOnce(code, time); }
+	bool isKeepUpOnce(T_UserKeyID code, unsigned int time) override { return this->key_mgr->isKeepUpOnce(code, time); }
 	bool isReDownInTime(T_UserKeyID code, unsigned int allow_time) override { return this->key_mgr->isReDownInTime(code, allow_time); }
 	bool isReUpInTime(T_UserKeyID code, unsigned int allow_time) override { return this->key_mgr->isReUpInTime(code, allow_time); }
 	bool isReDownWithinTime(T_UserKeyID code, unsigned int min_time, unsigned int max_time) override { return this->key_mgr->isReDownWithinTime(code, min_time, max_time); }
@@ -646,6 +658,8 @@ public:
 	virtual bool isUpOnce(T_UserKeyID code) = 0;
 	virtual bool isKeepDown(T_UserKeyID code, unsigned int time_min) = 0;
 	virtual bool isKeepUp(T_UserKeyID code, unsigned int time_min) = 0;
+	virtual bool isKeepDownOnce(T_UserKeyID code, unsigned int time) = 0;
+	virtual bool isKeepUpOnce(T_UserKeyID code, unsigned int time) = 0;
 	virtual bool isReDownInTime(T_UserKeyID code, unsigned int allow_time) = 0;
 	virtual bool isReUpInTime(T_UserKeyID code, unsigned int allow_time) = 0;
 	virtual bool isReDownWithinTime(T_UserKeyID code, unsigned int min_time, unsigned int max_time) = 0;
@@ -785,6 +799,8 @@ public:
 	bool isUpOnce(T_UserKeyID code) override { return this->key_mgr->isUpOnce(code); }
 	bool isKeepDown(T_UserKeyID code, unsigned int time_min) override { return this->key_mgr->isKeepDown(code, time_min); }
 	bool isKeepUp(T_UserKeyID code, unsigned int time_min) override { return this->key_mgr->isKeepUp(code, time_min); }
+	bool isKeepDownOnce(T_UserKeyID code, unsigned int time) override { return this->key_mgr->isKeepDownOnce(code, time); }
+	bool isKeepUpOnce(T_UserKeyID code, unsigned int time) override { return this->key_mgr->isKeepUpOnce(code, time); }
 	bool isReDownInTime(T_UserKeyID code, unsigned int allow_time) override { return this->key_mgr->isReDownInTime(code, allow_time); }
 	bool isReUpInTime(T_UserKeyID code, unsigned int allow_time) override { return this->key_mgr->isReUpInTime(code, allow_time); }
 	bool isReDownWithinTime(T_UserKeyID code, unsigned int min_time, unsigned int max_time) override { return this->key_mgr->isReDownWithinTime(code, min_time, max_time); }

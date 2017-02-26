@@ -18,6 +18,8 @@ void Resources::initialize() {
 void Image::loadGameImage() {
 	this->mousePointer = LoadGraph("asset\\pointer.png");
 	LoadDivGraph("asset\\mapchip\\chip\\mapchip.bmp", 12, 4, 3, 64, 64, this->map_chip);
+	this->targetMarker = LoadGraph("asset\\marker.png");
+	LoadDivGraph("asset\\plane\\planes.png", 10, 10, 1, 360, 360, this->plane);
 }
 
 void Image::loadMenuImage() {

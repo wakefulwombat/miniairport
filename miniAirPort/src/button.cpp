@@ -1,7 +1,7 @@
 #include "button.h"
 #include "input.h"
 
-Button::Button(Vec2D center, Size size, std::string text, int font_size, std::function<void(void)> callback_clicked, std::function<Vec2D(void)> get_mouse_pointer_world_pos, Color_RGB text_color, Color_RGB background_color, Color_RGB mouseover_color) : ObjectBase(center, 100, std::make_shared<InternalObjectController_None>()), callback_clicked(callback_clicked), get_mouse_pointer_world_pos(get_mouse_pointer_world_pos), text(text), text_color(text_color), background_color(background_color), mouseover_color(mouseover_color), font_size(font_size){
+Button::Button(Vec2D center, Size size, std::string text, int font_size, std::function<void(void)> callback_clicked, std::function<Vec2D(void)> get_mouse_pointer_world_pos, Color_RGB text_color, Color_RGB background_color, Color_RGB mouseover_color) : ObjectBase(center, 1000), callback_clicked(callback_clicked), get_mouse_pointer_world_pos(get_mouse_pointer_world_pos), text(text), text_color(text_color), background_color(background_color), mouseover_color(mouseover_color), font_size(font_size){
 	this->world_pos = center;
 
 	this->isClicked = false;
@@ -49,7 +49,7 @@ void Button::draw(const std::shared_ptr<CameraDrawInterface> &camera) const {
 
 
 
-RadioButton::RadioButton(Vec2D center, Size size, std::string text, int font_size, std::function<void(void)> callback_afterOn, std::function<Vec2D(void)> get_mouse_pointer_world_pos, Color_RGB text_color, Color_RGB background_color_off, Color_RGB background_color_on, Color_RGB mouseover_color) : ObjectBase(center, 100, std::make_shared<InternalObjectController_None>()), callback_afterOn(callback_afterOn), get_mouse_pointer_world_pos(get_mouse_pointer_world_pos), text(text), text_color(text_color), background_color_on(background_color_on), background_color_off(background_color_off), mouseover_color(mouseover_color), font_size(font_size) {
+RadioButton::RadioButton(Vec2D center, Size size, std::string text, int font_size, std::function<void(void)> callback_afterOn, std::function<Vec2D(void)> get_mouse_pointer_world_pos, Color_RGB text_color, Color_RGB background_color_off, Color_RGB background_color_on, Color_RGB mouseover_color) : ObjectBase(center, 1000), callback_afterOn(callback_afterOn), get_mouse_pointer_world_pos(get_mouse_pointer_world_pos), text(text), text_color(text_color), background_color_on(background_color_on), background_color_off(background_color_off), mouseover_color(mouseover_color), font_size(font_size) {
 	this->is_on = false;
 }
 

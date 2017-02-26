@@ -3,6 +3,7 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+#include "targetMarker.h"
 
 void World::loadStageInfo(int stage) {
 	std::string filename = "asset\\mapchip\\stage" + std::to_string(stage) + "\\stage_info.txt";
@@ -27,6 +28,29 @@ void World::loadStageInfo(int stage) {
 	this->chipSize_pixel.width = std::stoi(col);
 	std::getline(stream, col, ',');
 	this->chipSize_pixel.height = std::stoi(col);
+
+	std::getline(ifs, line);
+	std::getline(ifs, line);
+	stream = std::istringstream(line);
+	std::getline(stream, col, ':');
+	this->now_time.hour = std::stoi(col);
+	std::getline(stream, col, ':');
+	this->now_time.minute = std::stoi(col);
+
+	std::getline(ifs, line);
+	std::getline(ifs, line);
+	int count = std::stoi(line);
+	for (int i = 0; i < count; ++i) {
+		std::getline(ifs, line);
+		stream = std::istringstream(line);
+		std::getline(stream, col, ',');
+		TargetMarkerKind kind = (TargetMarkerKind)std::stoi(col);
+		std::getline(stream, col, ',');
+		int x = std::stoi(col);
+		std::getline(stream, col, ',');
+		int y = std::stoi(col);
+		this->target_marker_factory->addTargetMarkerInfo(Vec2D(x, y), kind);
+	}
 }
 
 void World::loadStageChip(int stage) {
@@ -75,8 +99,9 @@ void World::update() {
 		this->camera->setZoom((1.0 + 0.3*wheel)*this->camera->getZoom(), 10);
 	}
 	
-	if (Input_T::getEventInterface_mouse()->isKeepDown("middle", 60)) {
-		//ポーズ画面	
+	if (Input_T::getEventInterface_mouse()->isKeepDownOnce("middle", 60)) {
+		//ポーズ画面
+		this->target_marker_factory->makeTargetByKind(TargetMarkerKind::Boarding);
 	}
 	if (Input_T::getEventInterface_mouse()->isUpOnce("middle")) {
 		this->camera->setAnchorWorldPosition((this->getWorldSizePixel() / 2).toVec());
