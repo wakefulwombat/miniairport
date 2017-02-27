@@ -34,7 +34,6 @@ class ObjectBase : public ExternalMinimalController, public ObjectManagementBase
 private:
 	//外部操作用
 	void setWorldPosition(Vec2D pos) override final { this->world_pos = pos; }
-	void setInvalid() override final { this->validation = false; }
 	void setControlRights(ControlStatus status) override { this->control_status = status; }
 
 protected:
@@ -48,13 +47,15 @@ public:
 
 	Vec2D getWorldPosition() override final { return this->world_pos; }
 	bool getValidation() override { return this->validation; }
+
+	//外部操作用
+	void setInvalid() override final { this->validation = false; }
 };
 
 //オブジェクトの集合体
 class ObjectsBase : public ExternalMinimalController, public ObjectManagementBaseKit {
 private:
 	//外部操作用
-	void setInvalid() override final { this->validation = false; }
 	void setControlRights(ControlStatus status) override final { this->control_status = status; }
 
 protected:
@@ -75,6 +76,9 @@ public:
 
 	Vec2D getCenterWorldPosition() { return this->center_world_pos; }
 	bool getValidation() override { return this->validation; }
+	
+	//外部操作用
+	void setInvalid() override final { this->validation = false; }
 };
 
 

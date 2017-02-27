@@ -3,7 +3,7 @@
 
 SceneGameMain::SceneGameMain(const std::shared_ptr<SceneCommonData> &common) : SceneBase(common) {
 	this->commonData = common;
-	this->initialize();
+	//this->initialize();
 }
 
 void SceneGameMain::initialize() {

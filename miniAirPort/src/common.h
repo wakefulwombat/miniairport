@@ -127,22 +127,28 @@ public:
 
 class Time24 {
 private:
-	void checkOverTime() { while (this->second >= 60) { this->second -= 60; this->minute++; } while (this->minute >= 60) { this->minute -= 60; this->hour++; } while (this->hour >= 24) { this->hour -= 24; this->day++; } }
-	void checkUnderTime() { while (this->second < 0) { this->second += 60; this->minute--; } while (this->minute < 0) { this->minute += 60; this->hour--; } while (this->hour < 0) { this->hour += 24; this->day--; } if (day < 0) { this->day = 0; this->hour = 0; this->minute = 0; this->second = 0; } }
+	void checkOverTime() { while (this->milli_second >= 60*1000) { this->milli_second -= 60*1000; this->minute++; } while (this->minute >= 60) { this->minute -= 60; this->hour++; } while (this->hour >= 24) { this->hour -= 24; this->day++; } }
+	void checkUnderTime() { while (this->milli_second < 0) { this->milli_second += 60*1000; this->minute--; } while (this->minute < 0) { this->minute += 60; this->hour--; } while (this->hour < 0) { this->hour += 24; this->day--; } if (day < 0) { this->day = 0; this->hour = 0; this->minute = 0; this->milli_second = 0; } }
 
 public:
 	int day;
-	int hour, minute, second;
+	int hour, minute, milli_second;
 
-	Time24(int hour = 0, int minute = 0, int second = 0) { this->day = 0; this->hour = hour; this->minute = minute; this->second = second; this->checkOverTime(); this->checkUnderTime(); }
-	Time24 operator+(const Time24& obj) { this->day += obj.day; this->hour += obj.hour; this->minute += obj.minute; this->second += obj.second; this->checkOverTime(); }
-	Time24 operator-(const Time24& obj) { this->day -= obj.day; this->hour -= obj.hour; this->minute -= obj.minute; this->second -= obj.second; this->checkUnderTime(); }
+	Time24(int hour = 0, int minute = 0, int second = 0) { this->day = 0; this->hour = hour; this->minute = minute; this->milli_second = second; this->checkOverTime(); this->checkUnderTime(); }
+	Time24 operator+(const Time24& obj);
+	Time24& operator+=(const Time24& obj) { this->day += obj.day; this->hour += obj.hour; this->minute += obj.minute; this->milli_second += obj.milli_second; this->checkOverTime(); return (*this); }
+	Time24 operator-(const Time24& obj);
+	Time24& operator-=(const Time24& obj) { this->day -= obj.day; this->hour -= obj.hour; this->minute -= obj.minute; this->milli_second -= obj.milli_second; this->checkUnderTime(); return (*this); }
+	Time24 operator+(const int& obj);
+	Time24& operator+=(const int& obj) { this->milli_second += obj; this->checkOverTime(); return (*this); }
+	Time24 operator-(const int& obj);
+	Time24& operator-=(const int& obj) { this->milli_second -= obj; this->checkUnderTime(); return (*this); }
 	bool operator<(const Time24& obj) { return this->toSecond() < obj.toSecond(); }
 	bool operator>(const Time24& obj) { return this->toSecond() > obj.toSecond(); }
-	long toSecond() const { return (24 * 60 * 60 * this->day + 60 * 60 * this->hour + 60 * this->minute + this->second); }
-	void addSecond(long sec) { if (sec >= 0) { this->second += sec; this->checkOverTime(); } else { this->second -= sec; this->checkUnderTime(); } }
+	long toSecond() const { return (24 * 60 * 60 * this->day + 60 * 60 * this->hour + 60 * this->minute + this->milli_second /1000); }
+	void addSecond(long milli_sec) { this->milli_second += milli_sec; if (milli_sec >= 0) { this->checkOverTime(); } else { this->checkUnderTime(); } }
 	void addMinute(long min) { if (min >= 0) { this->minute += min; this->checkOverTime(); } else { this->minute -= min; this->checkUnderTime(); } }
-	std::string toString(std::string separator = ":", bool show_sec = false);
+	std::string toString(std::string separator = ":", bool show_sec = false) const;
 };
 
 int Round(double x);

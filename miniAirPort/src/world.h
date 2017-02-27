@@ -4,8 +4,9 @@
 #include <memory>
 #include "base_sceneBase.h"
 #include "base_objectBase.h"
-#include "targetMarker.h"
+#include "timeTable.h"
 #include "resource.h"
+#include "button.h"
 
 class MapChip : public ObjectBase, public ImageProperty {
 private:
@@ -25,16 +26,17 @@ class World : public LayerBase {
 private:
 	Size chipSize_pixel;
 	Size worldSize_chipNum;
-	Time24 now_time;
-
-	std::shared_ptr<TargetMarkerFactory> target_marker_factory;
+	
+	std::shared_ptr<RadioButton_Fix> high_speed;
+	std::shared_ptr<TimeTable> time_table;
 
 	void loadStageInfo(int stage);
+	void loadStageTimeTable(int stage);
 	void loadStageChip(int stage);
 
 public:
-	World(int stage) : LayerBase(0.0, false, std::make_shared<Camera>(Size(1280, 720))) { this->target_marker_factory = std::make_shared<TargetMarkerFactory>([this](std::shared_ptr<ObjectBase> obj) {this->addObject(obj); }); this->initialize(); this->loadStageInfo(stage); this->loadStageChip(stage); this->camera->setWorldSize(this->getWorldSizePixel()); }
-	void initialize() override {}
+	World(int stage);
+	void initialize() override { LayerBase::initialize(); }
 	void update() override;
 	Size getWorldSizePixel() { return Size(this->chipSize_pixel.width*this->worldSize_chipNum.width, this->chipSize_pixel.height*this->worldSize_chipNum.height); }
 };

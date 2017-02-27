@@ -5,8 +5,23 @@
 #include <string>
 #include "targetMarker.h"
 
+World::World(int stage) : LayerBase(0.0, false, std::make_shared<Camera>(Size(1280, 720))) { 
+	
+	this->time_table = std::make_shared<TimeTable>([this](std::shared_ptr<ObjectBase> obj) {this->addObject(obj); });
+	this->high_speed = std::make_shared<RadioButton_Fix>(Vec2D(1240,680), Size(40, 40), "=", 10, []() {});
+	this->initialize();
+	
+	this->loadStageInfo(stage);
+	this->loadStageTimeTable(stage);
+	this->loadStageChip(stage);
+	
+	this->camera->setWorldSize(this->getWorldSizePixel());
+	this->time_table->addTimerBoxToObject();
+	this->addObject(this->high_speed); 
+}
+
 void World::loadStageInfo(int stage) {
-	std::string filename = "asset\\mapchip\\stage" + std::to_string(stage) + "\\stage_info.txt";
+	std::string filename = "asset\\map\\stage" + std::to_string(stage) + "\\stage_info.txt";
 	std::ifstream ifs(filename);
 	if (!ifs) return;
 
@@ -32,10 +47,12 @@ void World::loadStageInfo(int stage) {
 	std::getline(ifs, line);
 	std::getline(ifs, line);
 	stream = std::istringstream(line);
+	Time24 t;
 	std::getline(stream, col, ':');
-	this->now_time.hour = std::stoi(col);
+	t.hour = std::stoi(col);
 	std::getline(stream, col, ':');
-	this->now_time.minute = std::stoi(col);
+	t.minute = std::stoi(col);
+	this->time_table->setNowTime(t);
 
 	std::getline(ifs, line);
 	std::getline(ifs, line);
@@ -49,16 +66,49 @@ void World::loadStageInfo(int stage) {
 		int x = std::stoi(col);
 		std::getline(stream, col, ',');
 		int y = std::stoi(col);
-		this->target_marker_factory->addTargetMarkerInfo(Vec2D(x, y), kind);
+		this->time_table->addTargetMarkerInfo(Vec2D(x, y), kind);
+	}
+}
+
+void World::loadStageTimeTable(int stage) {
+	std::string filename = "asset\\map\\stage" + std::to_string(stage) + "\\timetable.csv";
+	std::ifstream ifs(filename);
+	if (!ifs) return;
+
+	std::string line, col;
+	std::istringstream stream;
+	std::getline(ifs, line);
+
+	std::getline(ifs, line);
+	while (!ifs.eof()) {
+		stream = std::istringstream(line);
+
+		Time24 time;
+		std::getline(stream, col, ',');
+		time.hour = std::stoi(col);
+		std::getline(stream, col, ',');
+		time.minute = std::stoi(col);
+
+		PlaneCode code;
+		std::getline(stream, col, ',');
+		code = (PlaneCode)std::stoi(col);
+
+		bool b;
+		std::getline(stream, col, ',');
+		b = (std::stoi(col) == 1);
+
+		this->time_table->addTimeTableInfo(time, code, b);
+
+		std::getline(ifs, line);
 	}
 }
 
 void World::loadStageChip(int stage) {
-	std::string filename_chip = "asset\\mapchip\\stage" + std::to_string(stage) + "\\chip.csv";
+	std::string filename_chip = "asset\\map\\stage" + std::to_string(stage) + "\\chip.csv";
 	std::ifstream ifs_chip(filename_chip);
 	if (!ifs_chip) return;
 
-	std::string filename_pass = "asset\\mapchip\\stage" + std::to_string(stage) + "\\passable.csv";
+	std::string filename_pass = "asset\\map\\stage" + std::to_string(stage) + "\\passable.csv";
 	std::ifstream ifs_pass(filename_pass);
 	if (!ifs_pass) return;
 
@@ -85,6 +135,10 @@ void World::loadStageChip(int stage) {
 }
 
 void World::update() {
+	if (this->high_speed->isOn()) this->time_table->changeIncrementMilliSecond(1000);
+	else this->time_table->changeIncrementMilliSecond(200);
+	this->time_table->update();
+
 	if (Input_T::getEventInterface_mouse()->isDownOnce("left") || Input_T::getEventInterface_mouse()->isUpOnce("left")) {
 		this->camera->setAnchorWorldPosition(this->camera->toWorldPosFromWindowPosPx(Input_T::getOperationInterface_mouse()->getPointerPosition()));
 	}
@@ -101,7 +155,6 @@ void World::update() {
 	
 	if (Input_T::getEventInterface_mouse()->isKeepDownOnce("middle", 60)) {
 		//ƒ|[ƒY‰æ–Ê
-		this->target_marker_factory->makeTargetByKind(TargetMarkerKind::Boarding);
 	}
 	if (Input_T::getEventInterface_mouse()->isUpOnce("middle")) {
 		this->camera->setAnchorWorldPosition((this->getWorldSizePixel() / 2).toVec());

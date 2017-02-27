@@ -553,8 +553,59 @@ Color_HSV Color_HSV::rotate(int addAngle) {
 	return tmp;
 }
 
+Time24 Time24::operator+(const Time24& obj) {
+	Time24 time;
 
-std::string Time24::toString(std::string separator, bool show_sec) {
+	time.day = this->day + obj.day;
+	time.hour = this->hour + obj.hour;
+	time.minute = this->minute + obj.minute;
+	time.milli_second = this->milli_second + obj.milli_second;
+
+	time.checkOverTime();
+
+	return time;
+}
+
+Time24 Time24::operator-(const Time24& obj) {
+	Time24 time;
+
+	time.day = this->day - obj.day;
+	time.hour = this->hour - obj.hour;
+	time.minute = this->minute - obj.minute;
+	time.milli_second = this->milli_second - obj.milli_second;
+
+	time.checkUnderTime();
+
+	return time;
+}
+
+Time24 Time24::operator+(const int& obj) {
+	Time24 time;
+
+	time.day = this->day;
+	time.hour = this->hour;
+	time.minute = this->minute;
+	time.milli_second = this->milli_second + obj;
+
+	time.checkOverTime();
+
+	return time;
+}
+
+Time24 Time24::operator-(const int& obj) {
+	Time24 time;
+
+	time.day = this->day;
+	time.hour = this->hour;
+	time.minute = this->minute;
+	time.milli_second = this->milli_second - obj;
+
+	time.checkUnderTime();
+
+	return time;
+}
+
+std::string Time24::toString(std::string separator, bool show_sec) const {
 	std::string res = "";
 	std::string s;
 
@@ -570,7 +621,7 @@ std::string Time24::toString(std::string separator, bool show_sec) {
 	if (show_sec) {
 		res += separator;
 
-		s = std::to_string(this->second);
+		s = std::to_string(this->milli_second / 1000);
 		if (s.length() == 1) s = "0" + s;
 		res += s;
 	}
