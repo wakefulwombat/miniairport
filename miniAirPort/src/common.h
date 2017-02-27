@@ -149,6 +149,7 @@ public:
 	void addSecond(long milli_sec) { this->milli_second += milli_sec; if (milli_sec >= 0) { this->checkOverTime(); } else { this->checkUnderTime(); } }
 	void addMinute(long min) { if (min >= 0) { this->minute += min; this->checkOverTime(); } else { this->minute -= min; this->checkUnderTime(); } }
 	std::string toString(std::string separator = ":", bool show_sec = false) const;
+	bool isSameHourAndMinute(Time24 obj) { return ((this->hour == obj.hour) && (this->minute == obj.minute)); }
 };
 
 int Round(double x);

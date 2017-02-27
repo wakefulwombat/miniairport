@@ -25,22 +25,27 @@ public:
 
 class TimerBox : public ObjectBase {
 private:
-	Time24 now_time;
+	Time24 now_time, pre_time;
 	int increment_milli_sec;
 
 public:
-	TimerBox(Vec2D pos) :ObjectBase(pos, 900000) {}
+	TimerBox(Vec2D pos) :ObjectBase(pos, 900000) { this->now_time = Time24(); this->pre_time = Time24(); }
 	void initialize() override {}
-	void update() override { this->now_time += this->increment_milli_sec; }
+	void update() override { this->pre_time = this->now_time; this->now_time += this->increment_milli_sec; }
 	void draw(const std::shared_ptr<CameraDrawInterface> &camera) const override { camera->drawStringOnWindowFixed(this->world_pos, this->now_time.toString(), Color_RGB(255, 255, 255)); }
 
 	void setNowTime(Time24 now) { this->now_time = now; }
 	void changeIncrementMilliSecond(int milli_sec) { this->increment_milli_sec = milli_sec; }
+
+	Time24& getNowTime() { return this->now_time; }
+	Time24& getPreTime() { return this->pre_time; }
 };
 
 class TimeTable {
 private:
 	const std::function<void(std::shared_ptr<ObjectBase>)> addObject;
+	const std::function<Size(void)> getWorldSize;
+	const std::function<bool(void)> isHighSpeedNow;
 
 	std::shared_ptr<TimerBox> timer;
 
@@ -52,7 +57,7 @@ private:
 	std::vector<TimeTableInfo> infos_timeTable;
 
 public:
-	TimeTable(std::function<void(std::shared_ptr<ObjectBase>)> addObject) : addObject(addObject) { this->timer = std::make_shared<TimerBox>(Vec2D(1220, 30)); this->initialize(); }
+	TimeTable(std::function<void(std::shared_ptr<ObjectBase>)> addObject, std::function<Size(void)> getWorldSize, std::function<bool(void)> isHighSpeedNow) : addObject(addObject), getWorldSize(getWorldSize), isHighSpeedNow(isHighSpeedNow) { this->timer = std::make_shared<TimerBox>(Vec2D(1220, 30)); this->initialize(); }
 	void initialize() { this->id_counter_targetMarker = 0; this->id_counter_timeTable; this->id_counter_plane = 0; this->infos_timeTable.clear(); this->infos_targetMarker.clear(); this->planes.clear(); this->target_markers.clear(); }
 	void update();
 

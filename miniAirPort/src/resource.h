@@ -11,6 +11,7 @@ private:
 	int mousePointer;
 	int targetMarker;
 	int plane[10];
+	int icon_arrival, icon_departure;
 
 public:
 	Image() { this->loadGameImage(); }
@@ -21,6 +22,8 @@ public:
 	int getMousePointer() { return this->mousePointer; }
 	int getTargetMarker() { return this->targetMarker; }
 	int getPlane(PlaneCode code) { return this->plane[(int)code]; }
+	int getIconArrival() { return this->icon_arrival; }
+	int getIconDeparture() { return this->icon_departure; }
 };
 
 class BGM {

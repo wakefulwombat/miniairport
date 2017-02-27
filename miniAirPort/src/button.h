@@ -29,6 +29,50 @@ public:
 	void finalize() override {}
 };
 
+class IconButton_Fix : public ObjectBase, public ImageProperty {
+protected:
+	const Color_RGB background_color;
+	const Color_RGB mouseover_color;
+	const Size size;
+	const int handle;
+
+	const std::function<void(void)> callback_clicked;
+
+	bool isClicked, isHovered;
+	unsigned int count;
+
+	void setControlRights(ControlStatus status) override final { this->control_status = status; }
+
+public:
+	IconButton_Fix(Vec2D center, Size button_size, Size img_size, int graph_handle, std::function<void(void)> callback_clicked, Color_RGB background_color = Color_RGB(100, 100, 100), Color_RGB mouseover_color = Color_RGB(150, 150, 150));
+	void initialize() override {}
+	void update() override;
+	void draw(const std::shared_ptr<CameraDrawInterface> &camera) const override;
+	void finalize() override {}
+};
+
+class DisappearButton_Fix : public ObjectBase {
+protected:
+	const std::string text;
+	const Color_RGB text_color;
+	const Color_RGB background_color;
+	const Color_RGB mouseover_color;
+	const Size size;
+	const int font_size;
+
+	const std::function<void(void)> callback_clicked;
+
+	bool isHovered;
+	unsigned int count;
+
+public:
+	DisappearButton_Fix(Vec2D center, Size size, std::string text, int font_size, std::function<void(void)> callback_clicked, Color_RGB text_color = Color_RGB(255, 255, 255), Color_RGB background_color = Color_RGB(100, 100, 100), Color_RGB mouseover_color = Color_RGB(150, 150, 150));
+	void initialize() override {}
+	void update() override;
+	void draw(const std::shared_ptr<CameraDrawInterface> &camera) const override;
+	void finalize() override {}
+};
+
 class RadioButton : public ObjectBase {
 protected:
 	const std::string text;

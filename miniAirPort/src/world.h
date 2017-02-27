@@ -28,6 +28,8 @@ private:
 	Size worldSize_chipNum;
 	
 	std::shared_ptr<RadioButton_Fix> high_speed;
+	std::shared_ptr<IconButton_Fix> show_arrivalTimeTable, show_departureTimeTable;
+
 	std::shared_ptr<TimeTable> time_table;
 
 	void loadStageInfo(int stage);
@@ -38,5 +40,7 @@ public:
 	World(int stage);
 	void initialize() override { LayerBase::initialize(); }
 	void update() override;
+
 	Size getWorldSizePixel() { return Size(this->chipSize_pixel.width*this->worldSize_chipNum.width, this->chipSize_pixel.height*this->worldSize_chipNum.height); }
+	bool isHighSpeedNow() { return this->high_speed->isOn(); }
 };

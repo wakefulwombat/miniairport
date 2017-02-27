@@ -4,11 +4,14 @@
 #include <sstream>
 #include <string>
 #include "targetMarker.h"
+#include "resource.h"
 
 World::World(int stage) : LayerBase(0.0, false, std::make_shared<Camera>(Size(1280, 720))) { 
 	
-	this->time_table = std::make_shared<TimeTable>([this](std::shared_ptr<ObjectBase> obj) {this->addObject(obj); });
+	this->time_table = std::make_shared<TimeTable>([this](std::shared_ptr<ObjectBase> obj) {this->addObject(obj); }, [this]() {return this->getWorldSizePixel(); }, [this]() {return this->isHighSpeedNow(); });
 	this->high_speed = std::make_shared<RadioButton_Fix>(Vec2D(1240,680), Size(40, 40), "=", 10, []() {});
+	this->show_arrivalTimeTable = std::make_shared<IconButton_Fix>(Vec2D(40, 680), Size(40, 40),Size(32,32), Resources::getImage()->getIconArrival(), []() {});
+	this->show_departureTimeTable = std::make_shared<IconButton_Fix>(Vec2D(100, 680), Size(40, 40), Size(32,32), Resources::getImage()->getIconDeparture(), []() {});
 	this->initialize();
 	
 	this->loadStageInfo(stage);
@@ -17,7 +20,9 @@ World::World(int stage) : LayerBase(0.0, false, std::make_shared<Camera>(Size(12
 	
 	this->camera->setWorldSize(this->getWorldSizePixel());
 	this->time_table->addTimerBoxToObject();
-	this->addObject(this->high_speed); 
+	this->addObject(this->high_speed);
+	this->addObject(this->show_arrivalTimeTable);
+	this->addObject(this->show_departureTimeTable);
 }
 
 void World::loadStageInfo(int stage) {
@@ -135,8 +140,8 @@ void World::loadStageChip(int stage) {
 }
 
 void World::update() {
-	if (this->high_speed->isOn()) this->time_table->changeIncrementMilliSecond(1000);
-	else this->time_table->changeIncrementMilliSecond(200);
+	if (this->high_speed->isOn()) this->time_table->changeIncrementMilliSecond(500);
+	else this->time_table->changeIncrementMilliSecond(100);
 	this->time_table->update();
 
 	if (Input_T::getEventInterface_mouse()->isDownOnce("left") || Input_T::getEventInterface_mouse()->isUpOnce("left")) {

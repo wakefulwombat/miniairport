@@ -92,7 +92,7 @@ public:
 	double img_opacity;//‰æ‘œ“§–¾“x(0.0~1.0)
 	bool img_turn;//¶‰E”½“]
 
-	ImagePropertyData(Size img_size, double exp = 1.0, double opac = 1.0, bool turn = false, double rot = 0.0) :img_size(img_size) {
+	ImagePropertyData(Size img_size, double exp = 1.0, double rot = 0.0, double opac = 1.0, bool turn = false) :img_size(img_size) {
 		this->img_expansion = exp;
 		this->img_rotation = rot;
 		this->img_opacity = opac;

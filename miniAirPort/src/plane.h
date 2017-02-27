@@ -18,11 +18,15 @@ enum class PlaneCode {
 };
 
 enum class PlaneStatus {
+	FreeFlightComing,
+	Landing,
+	WaitingTransportToBoarding,
+	TransportToBoarding,
 	Preparating,
-	Transporting,
-	Waiting,
+	TransportingToTakeoff,
+	WaitingTakeoff,
 	Takeoffing,
-	Landing
+	FreeFlightAway
 };
 
 class Plane : public ObjectBase, public ImageProperty, public MoveProperty{
@@ -32,8 +36,12 @@ private:
 	PlaneStatus status;
 	unsigned int target_marker_id, time_table_id;
 
+	const std::function<bool(void)> isHighSpeedNow;
+
+	void setControlRights(ControlStatus status) override final { this->control_status = status; }
+
 public:
-	Plane(Vec2D world_pos, unsigned int id, PlaneCode code, PlaneStatus status) : ObjectBase(world_pos, 1000), ImageProperty(std::make_shared<ImagePropertyData>(Size(64, 64), 0.3)), MoveProperty(std::make_shared<MovePropertyData>()), _id(id), code(code) { this->initialize(); this->status = status; this->target_marker_id = -1; this->time_table_id = -1; }
+	Plane(Vec2D world_pos, unsigned int id, PlaneCode code, PlaneStatus status, std::function<bool(void)> isHighSpeedNow, double vel = 0.0, double rad = 0.0);
 	void initialize() override;
 	void update() override;
 	void draw(const std::shared_ptr<CameraDrawInterface> &camera) const override;

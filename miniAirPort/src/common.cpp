@@ -125,7 +125,7 @@ double Vec2D::toNorm() {
 }
 
 double Vec2D::toAngle() {
-	return atan2(this->y, this->x) + M_PI / 2;
+	return atan2(this->y, this->x);
 }
 
 Direction4 Vec2D::toDirection4(double neutral_min)
@@ -165,7 +165,7 @@ double Vec2D::getNorm(Vec2D origin) {
 }
 
 double Vec2D::getAngle(Vec2D origin) {
-	return atan2(this->y - origin.y, this->x - origin.x) + M_PI / 2;
+	return atan2(this->y - origin.y, this->x - origin.x);
 }
 
 double Vec2D::dot(Vec2D vec) {
