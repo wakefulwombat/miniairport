@@ -21,6 +21,11 @@ void Plane::update() {
 		if(this->isHighSpeedNow()) this->world_pos += Vec2D::fromPowAng(this->mv_prop->trans_vel*5.0, this->mv_prop->trans_angle);
 		else this->world_pos += Vec2D::fromPowAng(this->mv_prop->trans_vel, this->mv_prop->trans_angle);
 	}
+
+	if (this->status == PlaneStatus::FreeFlightAway) {
+		if (this->isHighSpeedNow()) this->world_pos += Vec2D::fromPowAng(this->mv_prop->trans_vel*5.0, this->mv_prop->trans_angle);
+		else this->world_pos += Vec2D::fromPowAng(this->mv_prop->trans_vel, this->mv_prop->trans_angle);
+	}
 }
 
 void Plane::draw(const std::shared_ptr<CameraDrawInterface> &camera) const {

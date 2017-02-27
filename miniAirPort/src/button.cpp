@@ -197,3 +197,39 @@ void RadioButton_Fix::draw(const std::shared_ptr<CameraDrawInterface> &camera) c
 	camera->drawRotateSquareOnWindowFixed(this->world_pos, this->size, 0.0, col);
 	camera->drawStringOnWindowFixed(this->world_pos, this->text, this->text_color);
 }
+
+
+
+IconRadioButton_Fix::IconRadioButton_Fix(Vec2D center, Size button_size, Size img_size, int graph_handle, std::function<void(void)> callback_afterOn, Color_RGB background_color_off, Color_RGB background_color_on) : ObjectBase(center, 1000), ImageProperty(std::make_shared<ImagePropertyData>(img_size)), size(button_size), handle(graph_handle), callback_afterOn(callback_afterOn), background_color_on(background_color_on), background_color_off(background_color_off) {
+	this->is_on = false;
+}
+
+void IconRadioButton_Fix::update() {
+	if (!this->validation) return;
+
+	Vec2D mouse = Input_T::getOperationInterface_mouse()->getPointerPosition();
+	if (mouse.x < this->world_pos.x - this->size.width / 2) return;
+	if (mouse.y < this->world_pos.y - this->size.height / 2) return;
+	if (mouse.x > this->world_pos.x + this->size.width / 2) return;
+	if (mouse.y > this->world_pos.y + this->size.height / 2) return;
+
+	if (Input_T::getEventInterface_mouse()->isDownOnce("left")) {
+		this->is_on = !this->is_on;
+		if (this->is_on) {
+			this->callback_afterOn();
+		}
+	}
+}
+
+void IconRadioButton_Fix::draw(const std::shared_ptr<CameraDrawInterface> &camera) const {
+	Color_RGB col;
+
+	if (this->is_on) {
+		col = this->background_color_on;
+	}
+	else {
+		col = this->background_color_off;
+	}
+	camera->drawRotateSquareOnWindowFixed(this->world_pos, this->size, 0.0, col);
+	camera->drawImageOnWindow(this->world_pos, this->handle, this->img_prop);
+}

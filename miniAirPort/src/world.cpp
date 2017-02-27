@@ -6,18 +6,18 @@
 #include "targetMarker.h"
 #include "resource.h"
 
-World::World(int stage) : LayerBase(0.0, false, std::make_shared<Camera>(Size(1280, 720))) { 
-	
+World::World(int stage, std::function<void(const std::shared_ptr<LayerBase>&)> push_layer) : LayerBase(0.0, false, std::make_shared<Camera>(Size(1280, 720))), push_layer(push_layer) {
+
 	this->time_table = std::make_shared<TimeTable>([this](std::shared_ptr<ObjectBase> obj) {this->addObject(obj); }, [this]() {return this->getWorldSizePixel(); }, [this]() {return this->isHighSpeedNow(); });
-	this->high_speed = std::make_shared<RadioButton_Fix>(Vec2D(1240,680), Size(40, 40), "=", 10, []() {});
-	this->show_arrivalTimeTable = std::make_shared<IconButton_Fix>(Vec2D(40, 680), Size(40, 40),Size(32,32), Resources::getImage()->getIconArrival(), []() {});
-	this->show_departureTimeTable = std::make_shared<IconButton_Fix>(Vec2D(100, 680), Size(40, 40), Size(32,32), Resources::getImage()->getIconDeparture(), []() {});
+	this->high_speed = std::make_shared<RadioButton_Fix>(Vec2D(1240, 680), Size(40, 40), "=", 10, []() {});
+	this->show_arrivalTimeTable = std::make_shared<IconRadioButton_Fix>(Vec2D(40, 680), Size(40, 40), Size(32, 32), Resources::getImage()->getIconArrival(), [this]() {this->offIconButtonDeparture(); });
+	this->show_departureTimeTable = std::make_shared<IconRadioButton_Fix>(Vec2D(100, 680), Size(40, 40), Size(32, 32), Resources::getImage()->getIconDeparture(), [this]() {this->offIconButtonArrival(); });
 	this->initialize();
-	
+
 	this->loadStageInfo(stage);
 	this->loadStageTimeTable(stage);
 	this->loadStageChip(stage);
-	
+
 	this->camera->setWorldSize(this->getWorldSizePixel());
 	this->time_table->addTimerBoxToObject();
 	this->addObject(this->high_speed);
@@ -160,6 +160,7 @@ void World::update() {
 	
 	if (Input_T::getEventInterface_mouse()->isKeepDownOnce("middle", 60)) {
 		//ƒ|[ƒY‰æ–Ê
+		this->push_layer(std::make_shared<Layer_Pause>(this->getCamera()->getWindowPixelSize()));
 	}
 	if (Input_T::getEventInterface_mouse()->isUpOnce("middle")) {
 		this->camera->setAnchorWorldPosition((this->getWorldSizePixel() / 2).toVec());

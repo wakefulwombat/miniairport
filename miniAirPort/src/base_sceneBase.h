@@ -8,6 +8,7 @@
 #include "base_objectBase.h"
 #include "Camera.h"
 #include "mousePointer.h"
+#include "button.h"
 
 class LayerBase : public RequiredFunc {
 protected:
@@ -29,6 +30,7 @@ public:
 	void popBackObject() { this->objects.pop_back(); }
 	double getShieldRatioOfUnderLayer() { return this->under_layer_shield_ratio; }
 	bool doesAllowedUpdateUnderLayer() { return this->allow_update_under_layer; }
+	void setInvalid() { this->validation = false; }
 
 	void initialize() override { this->validation = true; this->objects.clear(); }
 	void update() override { this->camera->update(); for (auto it = this->objects.begin(); it != this->objects.end();) { if (!(*it)->getValidation()) { it = this->objects.erase(it); } else { (*it)->update(); ++it; } } }
@@ -51,6 +53,7 @@ public:
 
 class Layer_Pause : public LayerBase {
 private:
+	std::shared_ptr<DisappearButton_Fix> back, title;
 
 public:
 	Layer_Pause(const Size window_size);

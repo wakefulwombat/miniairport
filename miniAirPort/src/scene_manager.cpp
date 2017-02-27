@@ -66,6 +66,7 @@ void SceneBase::update() {
 			for (int j = i; j >= 0; --j) update_allowed.push_front(false);
 			break;
 		}
+		else update_allowed.push_front(true);
 	}
 
 	this->layers[this->layers.size() - 1]->addObject(this->commonData->mouse_pointer);

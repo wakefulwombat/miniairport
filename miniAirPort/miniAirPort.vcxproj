@@ -42,6 +42,7 @@
     <ClInclude Include="src\camera.h" />
     <ClInclude Include="src\common.h" />
     <ClInclude Include="src\input.h" />
+    <ClInclude Include="src\table.h" />
     <ClInclude Include="src\targetMarker.h" />
     <ClInclude Include="src\world.h" />
     <ClInclude Include="src\mousePointer.h" />

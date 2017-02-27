@@ -20,7 +20,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	SetGraphMode(1280, 720, 16);
 	SetDrawMode(DX_DRAWMODE_BILINEAR);
-	SetWindowText("Mini-AirPort");
+	SetWindowText("One-Operation AirPort");
 
 
 	if (DxLib_Init() == -1) return -1;

@@ -123,3 +123,27 @@ public:
 
 	bool isOn() { return this->is_on; }
 };
+
+class IconRadioButton_Fix : public ObjectBase, public ImageProperty {
+protected:
+	const Color_RGB background_color_on;
+	const Color_RGB background_color_off;
+	const Size size;
+	const int handle;
+
+	const std::function<void(void)> callback_afterOn;
+
+	bool is_on;
+
+	void setControlRights(ControlStatus status) override final { this->control_status = status; }
+
+public:
+	IconRadioButton_Fix(Vec2D center, Size button_size,Size img_size, int graph_handle, std::function<void(void)> callback_on, Color_RGB background_color_off = Color_RGB(100, 100, 100), Color_RGB background_color_on = Color_RGB(50, 200, 50));
+	void initialize() override {}
+	void update() override;
+	void draw(const std::shared_ptr<CameraDrawInterface> &camera) const override;
+	void finalize() override {}
+
+	bool isOn() { return this->is_on; }
+	void setOff() { this->is_on = false; }
+};

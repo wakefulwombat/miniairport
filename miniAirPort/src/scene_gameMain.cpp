@@ -8,7 +8,7 @@ SceneGameMain::SceneGameMain(const std::shared_ptr<SceneCommonData> &common) : S
 
 void SceneGameMain::initialize() {
 	SceneBase::initialize();
-	this->layers.push_back(std::make_shared<World>(this->commonData->stage_num));
+	this->layers.push_back(std::make_shared<World>(this->commonData->stage_num, [this](const std::shared_ptr<LayerBase>& layer) {this->pushLayer(layer); }));
 }
 
 void SceneGameMain::update() {
