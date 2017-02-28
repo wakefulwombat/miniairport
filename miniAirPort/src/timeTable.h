@@ -43,7 +43,7 @@ public:
 
 class TimeTable {
 private:
-	const std::function<void(std::shared_ptr<ObjectBase>)> addObject;
+	const std::function<void(const std::shared_ptr<ObjectBase>&)> addObject;
 	const std::function<Size(void)> getWorldSize;
 	const std::function<bool(void)> isHighSpeedNow;
 

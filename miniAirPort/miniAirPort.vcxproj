@@ -30,6 +30,7 @@
     <ClCompile Include="src\resource.cpp" />
     <ClCompile Include="src\scene_gameMain.cpp" />
     <ClCompile Include="src\scene_manager.cpp" />
+    <ClCompile Include="src\table.cpp" />
     <ClCompile Include="src\timeTable.cpp" />
     <ClCompile Include="src\world.cpp" />
   </ItemGroup>
