@@ -47,15 +47,14 @@ private:
 	const Size cell_size;
 	std::shared_ptr<CellBase> header;
 	std::deque<std::shared_ptr<CellBase>> cells;
-	const std::function<void(const std::shared_ptr<ObjectBase>&)> addObject;
 
 public:
-	Column(std::function<void(const std::shared_ptr<ObjectBase>&)> addObject, int header_height, Size cell_size, Size img_size, int graph_handle, Color_RGB back_color = Color_RGB(200, 200, 200), double img_exp = 1.0, bool fill = false);
-	Column(std::function<void(const std::shared_ptr<ObjectBase>&)> addObject, int header_height, Size cell_size, std::string text, Color_RGB back_color = Color_RGB(200, 200, 200), Color_RGB text_color = Color_RGB(255, 255, 255), bool fill = false);
+	Column(int header_height, Size cell_size, Size img_size, int graph_handle, Color_RGB back_color = Color_RGB(200, 200, 200), double img_exp = 1.0, bool fill = false);
+	Column(int header_height, Size cell_size, std::string text, Color_RGB back_color = Color_RGB(200, 200, 200), Color_RGB text_color = Color_RGB(255, 255, 255), bool fill = false);
 	void initialize() { this->cells.clear(); }
 
-	void pushBackImageCell(Size img_size, int graph_handle, Color_RGB back_color = Color_RGB(200, 200, 200), double img_exp = 1.0, bool fill = false) { std::shared_ptr<ImageCell> cell = std::make_shared<ImageCell>(Vec2D(), this->cell_size, img_size, graph_handle, back_color, img_exp, fill); this->cells.push_back(cell); this->addObject(cell); }
-	void pushBackTextCell(std::string text, Color_RGB back_color = Color_RGB(200, 200, 200), Color_RGB text_color = Color_RGB(255, 255, 255), bool fill = false) { std::shared_ptr<TextCell> cell = std::make_shared<TextCell>(Vec2D(), this->cell_size, text, back_color, text_color, fill); this->cells.push_back(cell); this->addObject(cell); }
+	void pushBackImageCell(Size img_size, int graph_handle, Color_RGB back_color = Color_RGB(200, 200, 200), double img_exp = 1.0, bool fill = false) { std::shared_ptr<ImageCell> cell = std::make_shared<ImageCell>(Vec2D(), this->cell_size, img_size, graph_handle, back_color, img_exp, fill); this->cells.push_back(cell); }
+	void pushBackTextCell(std::string text, Color_RGB back_color = Color_RGB(200, 200, 200), Color_RGB text_color = Color_RGB(255, 255, 255), bool fill = false) { std::shared_ptr<TextCell> cell = std::make_shared<TextCell>(Vec2D(), this->cell_size, text, back_color, text_color, fill); this->cells.push_back(cell); }
 	void popFrontCell() { if (this->cells.size() == 0)return; this->cells[0]->setInvalid(); this->cells.pop_front(); }
 	void removeAll() { for (auto it = this->cells.begin(); it != this->cells.end(); ++it) { (*it)->setInvalid(); } this->cells.clear(); this->header->setInvalid(); this->header = nullptr; }
 
@@ -64,6 +63,9 @@ public:
 	int getRowNumberSize() { return this->cells.size(); }
 	int getWidthPixelSize() { return this->header->getSize().width; }
 	int getHeightPixelSize() { return (this->header->getSize().height + this->cell_size.height*this->cells.size()); }
+	int getHeightPixelSize(int row_max) { return (this->header->getSize().height + this->cell_size.height*row_max); }
+
+	void addObjectToList(unsigned int row_index, const std::function<void(const std::shared_ptr<ObjectBase>&)> addObject) { if (row_index >= this->cells.size()) return; addObject(this->cells[row_index]); }
 };
 
 
@@ -71,22 +73,29 @@ class Table {
 private:
 	std::deque<std::shared_ptr<Column>> columns;
 	const std::function<void(const std::shared_ptr<ObjectBase>&)> addObject;
+	const int header_height, cell_height;
+	const int show_row_max;
 
-	int getLongestColumnIndex() { int l = 0; for (int i = 0; i < this->columns.size(); ++i) { if (this->columns[i]->getRowNumberSize() > this->columns[l]->getRowNumberSize()) { l = i; } } return l; }
+	int getLongestColumnIndex() { int l = 0; for (unsigned int i = 0; i < this->columns.size(); ++i) { if (this->columns[i]->getRowNumberSize() > this->columns[l]->getRowNumberSize()) { l = i; } } return l; }
 
 public:
-	Table(std::function<void(const std::shared_ptr<ObjectBase>&)> addObject) :addObject(addObject) {}
+	Table(std::function<void(const std::shared_ptr<ObjectBase>&)> addObject, int header_height, int cell_height, int show_row_max = 10) :addObject(addObject), header_height(header_height), cell_height(cell_height), show_row_max(show_row_max) {}
 	void initialize() { this->columns.clear(); }
 
-	int makeColumnTextHeader(int header_height, Size cell_size, std::string text, Color_RGB back_color = Color_RGB(200, 200, 200), Color_RGB text_color = Color_RGB(255, 255, 255), bool fill = false);
-	int makeColumnImageHeader(int header_height, Size cell_size, Size img_size, int graph_handle, Color_RGB back_color = Color_RGB(200, 200, 200), double img_exp = 1.0, bool fill = false);
+	int makeColumnTextHeader(int cell_width, std::string text, Color_RGB back_color = Color_RGB(200, 200, 200), Color_RGB text_color = Color_RGB(255, 255, 255), bool fill = false);
+	int makeColumnImageHeader(int cell_width, Size img_size, int graph_handle, Color_RGB back_color = Color_RGB(200, 200, 200), double img_exp = 1.0, bool fill = false);
 
-	int addTextCell(int column_index);
-	int addImageCell(int column_index);
+	int addTextCell(unsigned int column_index, std::string text, Color_RGB back_color = Color_RGB(200, 200, 200), Color_RGB text_color = Color_RGB(255, 255, 255), bool fill = false);
+	int addImageCell(unsigned int column_index, Size img_size, int graph_handle, Color_RGB back_color = Color_RGB(200, 200, 200), double img_exp = 1.0, bool fill = false);
+
+	void popFrontRow();
 
 	int getColumnNumberSize() { return this->columns.size(); }
 	int getLongestRowNumberSize() { int l = 0; for (auto it = this->columns.begin(); it != this->columns.end(); ++it) { if ((*it)->getRowNumberSize() > l) l = (*it)->getRowNumberSize(); } return l; }
 
 	int getTableWidthPixel() { int sum = 0; for (auto it = this->columns.begin(); it != this->columns.end(); ++it) { sum += (*it)->getWidthPixelSize(); } return sum; }
 	int getTableHeightPixel() { int i = this->getLongestColumnIndex(); return this->columns[i]->getHeightPixelSize(); }
+	int getTableHeightPixel(int row_max) { return (this->header_height + row_max*this->cell_height); }
+
+	void formatTable(Vec2D leftup_world_pos);
 };

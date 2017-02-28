@@ -33,7 +33,6 @@ public:
 class ObjectBase : public ExternalMinimalController, public ObjectManagementBaseKit {
 private:
 	//外部操作用
-	void setWorldPosition(Vec2D pos) override final { this->world_pos = pos; }
 	void setControlRights(ControlStatus status) override { this->control_status = status; }
 
 protected:
@@ -49,6 +48,7 @@ public:
 	bool getValidation() override { return this->validation; }
 
 	//外部操作用
+	void setWorldPosition(Vec2D pos) override final { this->world_pos = pos; }
 	void setInvalid() override final { this->validation = false; }
 };
 
