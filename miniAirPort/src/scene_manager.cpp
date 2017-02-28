@@ -2,7 +2,6 @@
 #include "scene_gameMain.h"
 #include "base_sceneBase.h"
 #include "input.h"
-#include <deque>
 
 SceneManager::SceneManager(Size screenSize) : SceneCommonData(screenSize) {
 	this->initialize();
@@ -50,33 +49,4 @@ void SceneManager::update() {
 	else {
 		this->nowScene->update();
 	}
-}
-
-void SceneBase::update() {
-	if (!this->layers[this->layers.size() - 1]->getValidation()) this->layers.pop_back();
-
-	std::deque<double> shields;
-	std::deque<bool> update_allowed;
-
-	shields.push_front(1.0);
-	update_allowed.push_front(true);
-	for (int i = this->layers.size() - 2; i >= 0; --i) { shields.push_front(this->layers[i + 1]->getShieldRatioOfUnderLayer()*shields.front()); }
-	for (int i = this->layers.size() - 2; i >= 0; --i) {
-		if (!this->layers[i + 1]->doesAllowedUpdateUnderLayer()) {
-			for (int j = i; j >= 0; --j) update_allowed.push_front(false);
-			break;
-		}
-		else update_allowed.push_front(true);
-	}
-
-	this->layers[this->layers.size() - 1]->addObject(this->commonData->mouse_pointer);
-	this->commonData->mouse_pointer_world_pos = this->layers[this->layers.size() - 1]->getCamera()->toWorldPosFromWindowPosPx(this->commonData->mouse_pointer->getWorldPosition());
-
-	for (unsigned int i = 0; i < this->layers.size(); ++i) {
-		if (update_allowed[i]) this->layers[i]->update();
-		this->layers[i]->setCameraShieldRatio(shields[i]);
-		this->layers[i]->draw();
-	}
-
-	this->layers[this->layers.size() - 1]->popBackObject();
 }

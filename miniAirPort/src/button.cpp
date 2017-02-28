@@ -118,6 +118,7 @@ void DisappearButton_Fix::update() {
 
 	if (Input_T::getEventInterface_mouse()->isDownOnce("left")) {
 		this->setInvalid();
+		this->callback_clicked();
 	}
 }
 
