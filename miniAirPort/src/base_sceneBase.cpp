@@ -33,8 +33,8 @@ void SceneBase::update() {
 }
 
 Layer_Pause::Layer_Pause(const Size window_size) : LayerBase(0.5, false, std::make_shared<Camera>(window_size)) {
-	this->back = std::make_shared<DisappearButton_Fix>(Vec2D(480, 360), Size(250, 100), "ゲームに戻る", 32, [this]() {this->setInvalid(); });
-	this->title = std::make_shared<DisappearButton_Fix>(Vec2D(800, 360), Size(250, 100), "タイトルに戻る", 32, []() {});
+	this->back = std::make_shared<DisappearButton_Fix>(Vec2D(400, 360), Size(250, 100), "ゲームに戻る", 32, [this]() {this->setInvalid(); });
+	this->title = std::make_shared<DisappearButton_Fix>(Vec2D(880, 360), Size(250, 100), "タイトルに戻る", 32, []() {});
 
 	this->addObject(this->back);
 	this->addObject(this->title);

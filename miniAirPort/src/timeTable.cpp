@@ -3,6 +3,13 @@
 #include <sstream>
 #include <string>
 
+TimeTable::TimeTable(std::function<void(std::shared_ptr<ObjectBase>)> addObject, std::function<Size(void)> getWorldSize, std::function<bool(void)> isHighSpeedNow) : addObject(addObject), getWorldSize(getWorldSize), isHighSpeedNow(isHighSpeedNow) {
+	this->timer = std::make_shared<TimerBox>(Vec2D(1220, 30));
+	this->arrivals = std::make_shared<Table>(addObject, 50, 30);
+	this->departures = std::make_shared<Table>(addObject, 50, 30);
+	this->initialize();
+}
+
 void TimeTable::update() { 
 	for (auto it = this->planes.begin(); it != this->planes.end();) { 
 		if (!(*it)->getValidation()) {

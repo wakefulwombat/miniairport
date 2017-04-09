@@ -1,6 +1,7 @@
 #pragma once
 #include "plane.h"
 #include "targetMarker.h"
+#include "table.h"
 #include "common.h"
 #include <memory>
 #include <vector>
@@ -48,6 +49,7 @@ private:
 	const std::function<bool(void)> isHighSpeedNow;
 
 	std::shared_ptr<TimerBox> timer;
+	std::shared_ptr<Table> departures, arrivals;
 
 	std::vector<std::shared_ptr<Plane>> planes;
 	std::vector<std::shared_ptr<TargetMarker>> target_markers;
@@ -57,7 +59,7 @@ private:
 	std::vector<TimeTableInfo> infos_timeTable;
 
 public:
-	TimeTable(std::function<void(std::shared_ptr<ObjectBase>)> addObject, std::function<Size(void)> getWorldSize, std::function<bool(void)> isHighSpeedNow) : addObject(addObject), getWorldSize(getWorldSize), isHighSpeedNow(isHighSpeedNow) { this->timer = std::make_shared<TimerBox>(Vec2D(1220, 30)); this->initialize(); }
+	TimeTable(std::function<void(std::shared_ptr<ObjectBase>)> addObject, std::function<Size(void)> getWorldSize, std::function<bool(void)> isHighSpeedNow);
 	void initialize() { this->id_counter_targetMarker = 0; this->id_counter_timeTable; this->id_counter_plane = 0; this->infos_timeTable.clear(); this->infos_targetMarker.clear(); this->planes.clear(); this->target_markers.clear(); }
 	void update();
 
