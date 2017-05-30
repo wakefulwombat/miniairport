@@ -48,6 +48,26 @@ Vec2D Size::toVec() {
 	return tmp;
 }
 
+Vec2D Size::toVecForLeftUpFromCenter()
+{
+	return Vec2D() - this->toVec() / 2;
+}
+
+Vec2D Size::toVecForRightUpFromCenter()
+{
+	return Vec2D(this->width, 0) - this->toVec() / 2;
+}
+
+Vec2D Size::toVecForLeftDownFromCenter()
+{
+	return Vec2D(0, this->height) - this->toVec() / 2;
+}
+
+Vec2D Size::toVecForRightDownFromCenter()
+{
+	return this->toVec() / 2;
+}
+
 
 
 Vec2D::Vec2D(){

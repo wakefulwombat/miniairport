@@ -8,6 +8,7 @@
 #include "DxLib.h"
 #include <math.h>
 #include <vector>
+#include <functional>
 
 enum class ControlStatus{
 	None,//êßå‰Ç»Çµ
@@ -37,11 +38,12 @@ private:
 
 protected:
 	Vec2D world_pos;
+	std::function<void(void)> after_clicked;
 
 	ControlStatus control_status;//êßå‰å†
 
 public:
-	ObjectBase(Vec2D world_pos, unsigned int z_sort) : ObjectManagementBaseKit(z_sort) { this->world_pos = world_pos; this->control_status = ControlStatus::None; }
+	ObjectBase(Vec2D world_pos, unsigned int z_sort) : ObjectManagementBaseKit(z_sort) { this->world_pos = world_pos; this->control_status = ControlStatus::None; this->after_clicked = []() {}; }
 	virtual ~ObjectBase(){}
 
 	Vec2D getWorldPosition() override final { return this->world_pos; }

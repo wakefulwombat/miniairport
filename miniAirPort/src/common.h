@@ -73,6 +73,10 @@ public:
 	Size operator+(const Size& obj);
 
 	Vec2D toVec();
+	Vec2D toVecForLeftUpFromCenter();
+	Vec2D toVecForRightUpFromCenter();
+	Vec2D toVecForLeftDownFromCenter();
+	Vec2D toVecForRightDownFromCenter();
 };
 
 

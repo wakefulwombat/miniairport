@@ -1,5 +1,40 @@
 #include "base_sceneBase.h"
+#include "input.h"
 #include <deque>
+
+void LayerBase::update() {
+	this->camera->update();
+	
+	for (auto it = this->objects.begin(); it != this->objects.end();) {
+		if (!(*it)->getValidation()) {
+			it = this->objects.erase(it);
+		}
+		else {
+			(*it)->update();
+			++it;
+		}
+	}
+
+	if (!Input_T::getEventInterface_mouse()->isDownOnce("left")) return;
+	Vec2D mouse = this->camera->toWorldPosFromWindowPosPx(Input_T::getOperationInterface_mouse()->getPointerPosition());
+	for (auto it = this->click_checks.begin(); it != this->click_checks.end();) {
+		if (!(*it)->isValid()) {
+			it = this->click_checks.erase(it);
+		}
+		else {
+			if (Vec2D::isPointWholeInSquare(mouse,
+				Mat2D::rotation((*it)->getObjectRotation(), (*it)->getWorldSize().toVecForLeftUpFromCenter()) + (*it)->getCenterWorldPosition(),
+				Mat2D::rotation((*it)->getObjectRotation(), (*it)->getWorldSize().toVecForRightUpFromCenter()) + (*it)->getCenterWorldPosition(),
+				Mat2D::rotation((*it)->getObjectRotation(), (*it)->getWorldSize().toVecForRightDownFromCenter()) + (*it)->getCenterWorldPosition(),
+				Mat2D::rotation((*it)->getObjectRotation(), (*it)->getWorldSize().toVecForLeftDownFromCenter()) + (*it)->getCenterWorldPosition())) {
+
+				(*it)->clicked();
+				break;
+			}
+			++it;
+		}
+	}
+}
 
 void SceneBase::update() {
 	if (!this->layers[this->layers.size() - 1]->getValidation()) this->layers.pop_back();

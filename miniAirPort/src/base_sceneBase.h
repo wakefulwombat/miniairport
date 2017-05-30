@@ -10,11 +10,25 @@
 #include "mousePointer.h"
 #include "button.h"
 
+class ClickCheck {
+public:
+	ClickCheck(std::function<bool(void)> isValid, std::function<Vec2D(void)> getCenterWorldPosition, std::function<Size(void)> getWorldSize, std::function<void(void)> clicked) {
+		this->isValid = isValid; this->getCenterWorldPosition = getCenterWorldPosition; this->getWorldSize = getWorldSize; this->clicked = clicked;
+	}
+	std::function<bool(void)> isValid;
+	std::function<Vec2D(void)> getCenterWorldPosition;
+	std::function<double(void)> getObjectRotation;
+	std::function<unsigned int(void)> getZSort;
+	std::function<Size(void)> getWorldSize;
+	std::function<void(void)> clicked;
+};
+
 class LayerBase : public RequiredFunc {
 protected:
 	std::shared_ptr<Camera> camera;
 
-	std::vector<std::shared_ptr<ObjectManagementBaseKit>> objects;
+	std::vector<std::shared_ptr<ObjectBase>> objects;
+	std::vector<std::shared_ptr<ClickCheck>> click_checks;
 	double under_layer_shield_ratio;//下層レイヤーの遮蔽率(描画前にカメラに設定する)(0.0で映さない)
 	bool allow_update_under_layer;//下層レイヤーを更新するか
 	bool validation;
@@ -26,14 +40,15 @@ public:
 	std::shared_ptr<Camera> getCamera() { return this->camera; }
 	void setCameraShieldRatio(double ratio) { return this->camera->setShieldRatio(ratio); }
 	bool getValidation() { return this->validation; }
-	void addObject(const std::shared_ptr<ObjectManagementBaseKit> &obj) { this->objects.push_back(obj); std::sort(this->objects.begin(), this->objects.end(), [](const std::shared_ptr<ObjectManagementBaseKit> &left, const std::shared_ptr<ObjectManagementBaseKit> &right) {return left->getZSort() < right->getZSort(); }); }
+	void addObject(const std::shared_ptr<ObjectBase> &obj) { this->objects.push_back(obj); std::sort(this->objects.begin(), this->objects.end(), [](const std::shared_ptr<ObjectManagementBaseKit> &left, const std::shared_ptr<ObjectManagementBaseKit> &right) {return left->getZSort() < right->getZSort(); }); }
+	void addClickCheck(const std::shared_ptr<ClickCheck> &obj) { this->click_checks.push_back(obj); std::sort(this->click_checks.begin(), this->click_checks.end(), [](const std::shared_ptr<ClickCheck> &left, const std::shared_ptr<ClickCheck> &right) {return left->getZSort() > right->getZSort(); }); }
 	void popBackObject() { this->objects.pop_back(); }
 	double getShieldRatioOfUnderLayer() { return this->under_layer_shield_ratio; }
 	bool doesAllowedUpdateUnderLayer() { return this->allow_update_under_layer; }
 	void setInvalid() { this->validation = false; }
 
 	void initialize() override { this->validation = true; this->objects.clear(); }
-	void update() override { this->camera->update(); for (auto it = this->objects.begin(); it != this->objects.end();) { if (!(*it)->getValidation()) { it = this->objects.erase(it); } else { (*it)->update(); ++it; } } }
+	void update() override;
 	virtual void draw() const { for each(std::shared_ptr<ObjectManagementBaseKit> obj in this->objects) { obj->draw(this->camera); } }
 };
 
