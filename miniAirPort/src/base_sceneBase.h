@@ -12,15 +12,23 @@
 
 class ClickCheck {
 public:
-	ClickCheck(std::function<bool(void)> isValid, std::function<Vec2D(void)> getCenterWorldPosition, std::function<Size(void)> getWorldSize, std::function<void(void)> clicked) {
-		this->isValid = isValid; this->getCenterWorldPosition = getCenterWorldPosition; this->getWorldSize = getWorldSize; this->clicked = clicked;
+	ClickCheck(std::function<bool(void)> isValid,
+			   std::function<bool(void)> isClicked,
+			   std::function<Vec2D(void)> getCenterWorldPosition,
+			   std::function<double(void)> getObjectRotation,
+			   std::function<unsigned int(void)> getZSort,
+			   std::function<Size(void)> getSize_worldBase,
+			   std::function<void(void)> callback) {
+		this->isValid = isValid; this->isClicked = isClicked; this->getCenterWorldPosition = getCenterWorldPosition;
+		this->getObjectRotation = getObjectRotation; this->getZSort = getZSort;
+		this->getSize_worldBase = getSize_worldBase; this->callback = callback;
 	}
-	std::function<bool(void)> isValid;
+	std::function<bool(void)> isValid, isClicked;
 	std::function<Vec2D(void)> getCenterWorldPosition;
 	std::function<double(void)> getObjectRotation;
 	std::function<unsigned int(void)> getZSort;
-	std::function<Size(void)> getWorldSize;
-	std::function<void(void)> clicked;
+	std::function<Size(void)> getSize_worldBase;
+	std::function<void(void)> callback;
 };
 
 class LayerBase : public RequiredFunc {
@@ -50,6 +58,8 @@ public:
 	void initialize() override { this->validation = true; this->objects.clear(); }
 	void update() override;
 	virtual void draw() const { for each(std::shared_ptr<ObjectManagementBaseKit> obj in this->objects) { obj->draw(this->camera); } }
+
+	void checkClickEvent();
 };
 
 class Layer_NowLoading : public LayerBase {

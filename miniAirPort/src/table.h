@@ -79,7 +79,7 @@ private:
 	int getLongestColumnIndex() { int l = 0; for (unsigned int i = 0; i < this->columns.size(); ++i) { if (this->columns[i]->getRowNumberSize() > this->columns[l]->getRowNumberSize()) { l = i; } } return l; }
 
 public:
-	Table(std::function<void(const std::shared_ptr<ObjectBase>&)> addObject, int header_height, int cell_height, int show_row_max = 10) :addObject(addObject), header_height(header_height), cell_height(cell_height), show_row_max(show_row_max) {}
+	Table(std::function<void(const std::shared_ptr<ObjectBase>&)> addObject, int header_height, int cell_height, int show_row_max = 10) :addObject(addObject), header_height(header_height), cell_height(cell_height), show_row_max(show_row_max) { this->initialize(); }
 	void initialize() { this->columns.clear(); }
 
 	int makeColumnTextHeader(int cell_width, std::string text, Color_RGB back_color = Color_RGB(200, 200, 200), Color_RGB text_color = Color_RGB(255, 255, 255), bool fill = false);

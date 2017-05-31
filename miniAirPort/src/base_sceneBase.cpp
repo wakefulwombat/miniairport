@@ -14,26 +14,6 @@ void LayerBase::update() {
 			++it;
 		}
 	}
-
-	if (!Input_T::getEventInterface_mouse()->isDownOnce("left")) return;
-	Vec2D mouse = this->camera->toWorldPosFromWindowPosPx(Input_T::getOperationInterface_mouse()->getPointerPosition());
-	for (auto it = this->click_checks.begin(); it != this->click_checks.end();) {
-		if (!(*it)->isValid()) {
-			it = this->click_checks.erase(it);
-		}
-		else {
-			if (Vec2D::isPointWholeInSquare(mouse,
-				Mat2D::rotation((*it)->getObjectRotation(), (*it)->getWorldSize().toVecForLeftUpFromCenter()) + (*it)->getCenterWorldPosition(),
-				Mat2D::rotation((*it)->getObjectRotation(), (*it)->getWorldSize().toVecForRightUpFromCenter()) + (*it)->getCenterWorldPosition(),
-				Mat2D::rotation((*it)->getObjectRotation(), (*it)->getWorldSize().toVecForRightDownFromCenter()) + (*it)->getCenterWorldPosition(),
-				Mat2D::rotation((*it)->getObjectRotation(), (*it)->getWorldSize().toVecForLeftDownFromCenter()) + (*it)->getCenterWorldPosition())) {
-
-				(*it)->clicked();
-				break;
-			}
-			++it;
-		}
-	}
 }
 
 void SceneBase::update() {
@@ -60,11 +40,40 @@ void SceneBase::update() {
 	
 	for (unsigned int i = 0; i < l; ++i) {
 		if (update_allowed[i]) this->layers[i]->update();
+	}
+	this->layers[l - 1]->checkClickEvent();
+	for (unsigned int i = 0; i < l; ++i) {
 		this->layers[i]->setCameraShieldRatio(shields[i]);
 		this->layers[i]->draw();
 	}
 
 	this->layers[l - 1]->popBackObject();
+}
+
+void LayerBase::checkClickEvent() {
+	Vec2D mouse = this->camera->toWorldPosFromWindowPosPx(Input_T::getOperationInterface_mouse()->getPointerPosition());
+	for (auto it = this->click_checks.begin(); it != this->click_checks.end();) {
+		if (!(*it)->isValid()) {
+			it = this->click_checks.erase(it);
+			continue;
+		}
+		else {
+			if (!(*it)->isClicked()) {
+				++it;
+				continue;
+			}
+			if (Vec2D::isPointWholeInSquare(mouse,
+				Mat2D::rotation((*it)->getObjectRotation(), (*it)->getSize_worldBase().toVecForLeftUpFromCenter()) + (*it)->getCenterWorldPosition(),
+				Mat2D::rotation((*it)->getObjectRotation(), (*it)->getSize_worldBase().toVecForRightUpFromCenter()) + (*it)->getCenterWorldPosition(),
+				Mat2D::rotation((*it)->getObjectRotation(), (*it)->getSize_worldBase().toVecForRightDownFromCenter()) + (*it)->getCenterWorldPosition(),
+				Mat2D::rotation((*it)->getObjectRotation(), (*it)->getSize_worldBase().toVecForLeftDownFromCenter()) + (*it)->getCenterWorldPosition())) {
+
+				(*it)->callback();
+				break;
+			}
+			++it;
+		}
+	}
 }
 
 Layer_Pause::Layer_Pause(const Size window_size) : LayerBase(0.5, false, std::make_shared<Camera>(window_size)) {
