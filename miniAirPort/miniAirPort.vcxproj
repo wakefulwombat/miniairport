@@ -26,6 +26,7 @@
     <ClCompile Include="src\input.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\mousePointer.cpp" />
+    <ClCompile Include="src\mouseTracer.cpp" />
     <ClCompile Include="src\plane.cpp" />
     <ClCompile Include="src\resource.cpp" />
     <ClCompile Include="src\scene_gameMain.cpp" />
@@ -43,6 +44,7 @@
     <ClInclude Include="src\camera.h" />
     <ClInclude Include="src\common.h" />
     <ClInclude Include="src\input.h" />
+    <ClInclude Include="src\mouseTracer.h" />
     <ClInclude Include="src\table.h" />
     <ClInclude Include="src\targetMarker.h" />
     <ClInclude Include="src\world.h" />
