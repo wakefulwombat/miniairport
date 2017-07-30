@@ -1,5 +1,6 @@
 #include "scene_gameMain.h"
 #include "world.h"
+#include "input.h"
 
 SceneGameMain::SceneGameMain(const std::shared_ptr<SceneCommonData> &common) : SceneBase(common) {
 	this->commonData = common;
@@ -13,4 +14,5 @@ void SceneGameMain::initialize() {
 
 void SceneGameMain::update() {
 	SceneBase::update();
+	this->checkClickEvent(Input_T::getOperationInterface_mouse()->getPointerPosition());
 }

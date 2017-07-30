@@ -39,10 +39,11 @@ protected:
 	std::vector<std::shared_ptr<ClickCheck>> click_checks;
 	double under_layer_shield_ratio;//下層レイヤーの遮蔽率(描画前にカメラに設定する)(0.0で映さない)
 	bool allow_update_under_layer;//下層レイヤーを更新するか
+	bool allow_click_check_under_layer;//下層レイヤーへのクリック判定を許可するか
 	bool validation;
 
 public:
-	LayerBase(double under_layer_shield_ratio, bool allow_update_under_layer, const std::shared_ptr<Camera> &camera) { this->under_layer_shield_ratio = under_layer_shield_ratio; this->allow_update_under_layer = allow_update_under_layer; this->camera = camera; this->initialize(); }
+	LayerBase(double under_layer_shield_ratio, bool allow_update_under_layer, bool allow_click_check_under_layer, const std::shared_ptr<Camera> &camera) { this->under_layer_shield_ratio = under_layer_shield_ratio; this->allow_update_under_layer = allow_update_under_layer; this->allow_click_check_under_layer = allow_click_check_under_layer; this->camera = camera; this->initialize(); }
 	virtual ~LayerBase() {}
 
 	std::shared_ptr<Camera> getCamera() { return this->camera; }
@@ -53,13 +54,14 @@ public:
 	void popBackObject() { this->objects.pop_back(); }
 	double getShieldRatioOfUnderLayer() { return this->under_layer_shield_ratio; }
 	bool doesAllowedUpdateUnderLayer() { return this->allow_update_under_layer; }
+	bool doesAllowedClickCheckUnderLayer() { return this->allow_click_check_under_layer; }
 	void setInvalid() { this->validation = false; }
 
 	void initialize() override { this->validation = true; this->objects.clear(); }
 	void update() override;
 	virtual void draw() const { for each(std::shared_ptr<ObjectManagementBaseKit> obj in this->objects) { obj->draw(this->camera); } }
 
-	void checkClickEvent();
+	void checkClickEvent(Vec2D window_pos);
 };
 
 class Layer_NowLoading : public LayerBase {
@@ -70,7 +72,7 @@ private:
 	std::future<void> f;
 
 public:
-	Layer_NowLoading(std::function<void(void)> load_func, const std::shared_ptr<Camera> &camera, unsigned int min_time = 0) : min_time(min_time), LayerBase(0.0, false, camera) { this->load_func = load_func; this->initialize(); }
+	Layer_NowLoading(std::function<void(void)> load_func, const std::shared_ptr<Camera> &camera, unsigned int min_time = 0) : min_time(min_time), LayerBase(0.0, false, false, camera) { this->load_func = load_func; this->initialize(); }
 	void initialize() override { this->count = 0; this->f = std::async(this->load_func); }
 	void update() override { this->count++; if ((this->f.wait_for(std::chrono::milliseconds(0)) == std::future_status::ready) && (this->count > this->min_time)) this->validation = false; }
 	void draw() const override {}
@@ -115,6 +117,7 @@ public:
 	SceneBase(const std::shared_ptr<SceneCommonData> &common) { this->commonData = common; this->initialize(); }
 	virtual ~SceneBase() {}
 	void pushLayer(const std::shared_ptr<LayerBase> &layer) { this->layers.push_back(layer); }
+	void checkClickEvent(Vec2D window_pos);
 
 	void initialize() override { this->layers.clear(); }
 	void update() override;

@@ -16,6 +16,17 @@ void LayerBase::update() {
 	}
 }
 
+void SceneBase::checkClickEvent(Vec2D window_pos) {
+	unsigned int l = this->layers.size();
+	for (int i = l - 1; i >= 0; --l) {
+		if (!this->layers[i]->getValidation()) continue;
+
+		this->layers[i]->checkClickEvent(window_pos);
+
+		if (!this->layers[i]->doesAllowedClickCheckUnderLayer()) break;
+	}
+}
+
 void SceneBase::update() {
 	if (!this->layers[this->layers.size() - 1]->getValidation()) this->layers.pop_back();
 	unsigned int l = this->layers.size();
@@ -41,7 +52,6 @@ void SceneBase::update() {
 	for (unsigned int i = 0; i < l; ++i) {
 		if (update_allowed[i]) this->layers[i]->update();
 	}
-	this->layers[l - 1]->checkClickEvent();
 	for (unsigned int i = 0; i < l; ++i) {
 		this->layers[i]->setCameraShieldRatio(shields[i]);
 		this->layers[i]->draw();
@@ -50,8 +60,8 @@ void SceneBase::update() {
 	this->layers[l - 1]->popBackObject();
 }
 
-void LayerBase::checkClickEvent() {
-	Vec2D mouse = this->camera->toWorldPosFromWindowPosPx(Input_T::getOperationInterface_mouse()->getPointerPosition());
+void LayerBase::checkClickEvent(Vec2D window_pos) {
+	Vec2D mouse = this->camera->toWorldPosFromWindowPosPx(window_pos);
 	for (auto it = this->click_checks.begin(); it != this->click_checks.end();) {
 		if (!(*it)->isValid()) {
 			it = this->click_checks.erase(it);
@@ -62,7 +72,7 @@ void LayerBase::checkClickEvent() {
 				++it;
 				continue;
 			}
-			if (Vec2D::isPointWholeInSquare(mouse,
+			else if (Vec2D::isPointWholeInSquare(mouse,
 				Mat2D::rotation((*it)->getObjectRotation(), (*it)->getSize_worldBase().toVecForLeftUpFromCenter()) + (*it)->getCenterWorldPosition(),
 				Mat2D::rotation((*it)->getObjectRotation(), (*it)->getSize_worldBase().toVecForRightUpFromCenter()) + (*it)->getCenterWorldPosition(),
 				Mat2D::rotation((*it)->getObjectRotation(), (*it)->getSize_worldBase().toVecForRightDownFromCenter()) + (*it)->getCenterWorldPosition(),
@@ -76,7 +86,7 @@ void LayerBase::checkClickEvent() {
 	}
 }
 
-Layer_Pause::Layer_Pause(const Size window_size) : LayerBase(0.5, false, std::make_shared<Camera>(window_size)) {
+Layer_Pause::Layer_Pause(const Size window_size) : LayerBase(0.5, false, false, std::make_shared<Camera>(window_size)) {
 	this->back = std::make_shared<DisappearButton_Fix>(Vec2D(400, 360), Size(250, 100), "ゲームに戻る", 32, [this]() {this->setInvalid(); });
 	this->title = std::make_shared<DisappearButton_Fix>(Vec2D(880, 360), Size(250, 100), "タイトルに戻る", 32, []() {});
 
@@ -94,7 +104,7 @@ void Layer_Pause::update() {
 
 
 
-Layer_GameOver::Layer_GameOver(const Size window_size) : LayerBase(0.3, true, std::make_shared<Camera>(window_size)) {
+Layer_GameOver::Layer_GameOver(const Size window_size) : LayerBase(0.3, true, false, std::make_shared<Camera>(window_size)) {
 
 }
 

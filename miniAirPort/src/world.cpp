@@ -6,7 +6,7 @@
 #include "targetMarker.h"
 #include "resource.h"
 
-World::World(int stage, std::function<void(const std::shared_ptr<LayerBase>&)> push_layer) : LayerBase(0.0, false, std::make_shared<Camera>(Size(1280, 720))), push_layer(push_layer) {
+World::World(int stage, std::function<void(const std::shared_ptr<LayerBase>&)> push_layer) : LayerBase(0.0, false, false, std::make_shared<Camera>(Size(1280, 720))), push_layer(push_layer) {
 
 	this->time_table = std::make_shared<TimeTable>([this](std::shared_ptr<ObjectBase> obj) {this->addObject(obj); }, [this]() {return this->getWorldSizePixel(); }, [this]() {return this->isHighSpeedNow(); });
 	this->high_speed = std::make_shared<RadioButton_Fix>(Vec2D(1240, 680), Size(40, 40), "=", 10, []() {});
