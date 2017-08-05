@@ -14,5 +14,5 @@ void SceneGameMain::initialize() {
 
 void SceneGameMain::update() {
 	SceneBase::update();
-	this->checkClickEvent(Input_T::getOperationInterface_mouse()->getPointerPosition());
+	this->checkEvent(Input_T::getOperationInterface_mouse()->getPointerPosition());
 }

@@ -10,33 +10,12 @@
 #include "mousePointer.h"
 #include "button.h"
 
-class ClickCheck {
-public:
-	ClickCheck(std::function<bool(void)> isValid,
-			   std::function<bool(void)> isClicked,
-			   std::function<Vec2D(void)> getCenterWorldPosition,
-			   std::function<double(void)> getObjectRotation,
-			   std::function<unsigned int(void)> getZSort,
-			   std::function<Size(void)> getSize_worldBase,
-			   std::function<void(void)> callback) {
-		this->isValid = isValid; this->isClicked = isClicked; this->getCenterWorldPosition = getCenterWorldPosition;
-		this->getObjectRotation = getObjectRotation; this->getZSort = getZSort;
-		this->getSize_worldBase = getSize_worldBase; this->callback = callback;
-	}
-	std::function<bool(void)> isValid, isClicked;
-	std::function<Vec2D(void)> getCenterWorldPosition;
-	std::function<double(void)> getObjectRotation;
-	std::function<unsigned int(void)> getZSort;
-	std::function<Size(void)> getSize_worldBase;
-	std::function<void(void)> callback;
-};
-
 class LayerBase : public RequiredFunc {
 protected:
 	std::shared_ptr<Camera> camera;
 
 	std::vector<std::shared_ptr<ObjectBase>> objects;
-	std::vector<std::shared_ptr<ClickCheck>> click_checks;
+	std::vector<std::shared_ptr<EventCheck>> click_checks;
 	double under_layer_shield_ratio;//下層レイヤーの遮蔽率(描画前にカメラに設定する)(0.0で映さない)
 	bool allow_update_under_layer;//下層レイヤーを更新するか
 	bool allow_click_check_under_layer;//下層レイヤーへのクリック判定を許可するか
@@ -50,7 +29,8 @@ public:
 	void setCameraShieldRatio(double ratio) { return this->camera->setShieldRatio(ratio); }
 	bool getValidation() { return this->validation; }
 	void addObject(const std::shared_ptr<ObjectBase> &obj) { this->objects.push_back(obj); std::sort(this->objects.begin(), this->objects.end(), [](const std::shared_ptr<ObjectManagementBaseKit> &left, const std::shared_ptr<ObjectManagementBaseKit> &right) {return left->getZSort() < right->getZSort(); }); }
-	void addClickCheck(const std::shared_ptr<ClickCheck> &obj) { this->click_checks.push_back(obj); std::sort(this->click_checks.begin(), this->click_checks.end(), [](const std::shared_ptr<ClickCheck> &left, const std::shared_ptr<ClickCheck> &right) {return left->getZSort() > right->getZSort(); }); }
+	void addEventCheck(const std::shared_ptr<ObjectBase> &obj) { this->click_checks.push_back(obj); std::sort(this->click_checks.begin(), this->click_checks.end(), [](const std::shared_ptr<EventCheck> &left, const std::shared_ptr<EventCheck> &right) {return left->e_getZSort() > right->e_getZSort(); }); }
+	void addEventCheck(std::function<bool(Vec2D)> doesEvent, std::function<void(void)> eventCallback, std::function<unsigned int(void)> getZSort = []() { return 0; }, std::function<bool(void)> getValidation = []() { return true; }) { this->click_checks.push_back(std::make_shared<EventCheck>(getValidation, getZSort, doesEvent, eventCallback)); std::sort(this->click_checks.begin(), this->click_checks.end(), [](const std::shared_ptr<EventCheck> &left, const std::shared_ptr<EventCheck> &right) {return left->e_getZSort() > right->e_getZSort(); });}
 	void popBackObject() { this->objects.pop_back(); }
 	double getShieldRatioOfUnderLayer() { return this->under_layer_shield_ratio; }
 	bool doesAllowedUpdateUnderLayer() { return this->allow_update_under_layer; }
@@ -61,7 +41,7 @@ public:
 	void update() override;
 	virtual void draw() const { for each(std::shared_ptr<ObjectManagementBaseKit> obj in this->objects) { obj->draw(this->camera); } }
 
-	void checkClickEvent(Vec2D window_pos);
+	void checkEvent(Vec2D window_pos);
 };
 
 class Layer_NowLoading : public LayerBase {
@@ -117,7 +97,7 @@ public:
 	SceneBase(const std::shared_ptr<SceneCommonData> &common) { this->commonData = common; this->initialize(); }
 	virtual ~SceneBase() {}
 	void pushLayer(const std::shared_ptr<LayerBase> &layer) { this->layers.push_back(layer); }
-	void checkClickEvent(Vec2D window_pos);
+	void checkEvent(Vec2D mouse_window_pos);
 
 	void initialize() override { this->layers.clear(); }
 	void update() override;

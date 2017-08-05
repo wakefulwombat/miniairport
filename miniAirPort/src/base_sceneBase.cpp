@@ -16,12 +16,12 @@ void LayerBase::update() {
 	}
 }
 
-void SceneBase::checkClickEvent(Vec2D window_pos) {
+void SceneBase::checkEvent(Vec2D window_pos) {
 	unsigned int l = this->layers.size();
 	for (int i = l - 1; i >= 0; --l) {
 		if (!this->layers[i]->getValidation()) continue;
 
-		this->layers[i]->checkClickEvent(window_pos);
+		this->layers[i]->checkEvent(window_pos);
 
 		if (!this->layers[i]->doesAllowedClickCheckUnderLayer()) break;
 	}
@@ -60,26 +60,19 @@ void SceneBase::update() {
 	this->layers[l - 1]->popBackObject();
 }
 
-void LayerBase::checkClickEvent(Vec2D window_pos) {
+void LayerBase::checkEvent(Vec2D window_pos) {
 	Vec2D mouse = this->camera->toWorldPosFromWindowPosPx(window_pos);
 	for (auto it = this->click_checks.begin(); it != this->click_checks.end();) {
-		if (!(*it)->isValid()) {
+		if (!(*it)->e_isValid()) {
 			it = this->click_checks.erase(it);
 			continue;
 		}
 		else {
-			if (!(*it)->isClicked()) {
-				++it;
-				continue;
-			}
-			else if (Vec2D::isPointWholeInSquare(mouse,
-				Mat2D::rotation((*it)->getObjectRotation(), (*it)->getSize_worldBase().toVecForLeftUpFromCenter()) + (*it)->getCenterWorldPosition(),
-				Mat2D::rotation((*it)->getObjectRotation(), (*it)->getSize_worldBase().toVecForRightUpFromCenter()) + (*it)->getCenterWorldPosition(),
-				Mat2D::rotation((*it)->getObjectRotation(), (*it)->getSize_worldBase().toVecForRightDownFromCenter()) + (*it)->getCenterWorldPosition(),
-				Mat2D::rotation((*it)->getObjectRotation(), (*it)->getSize_worldBase().toVecForLeftDownFromCenter()) + (*it)->getCenterWorldPosition())) {
-
-				(*it)->callback();
-				break;
+			for (unsigned int i = 0; i < (*it)->e_doesEvent.size(); ++i) {
+				if ((*it)->e_doesEvent[i](window_pos)) {
+					(*it)->e_callback[i]();
+					return;
+				}
 			}
 			++it;
 		}

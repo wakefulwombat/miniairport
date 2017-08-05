@@ -30,24 +30,36 @@ public:
 	virtual void draw(const std::shared_ptr<CameraDrawInterface> &camera) const = 0;
 };
 
+class EventCheck {
+public:
+	EventCheck(std::function<bool(void)> isValid, std::function<unsigned int(void)> getZSort, std::function<bool(Vec2D)> doesEvent, std::function<void(void)> eventCallback) {this->e_isValid = isValid;this->e_getZSort = getZSort;this->addEvent(doesEvent, eventCallback);}
+	void addEvent(std::function<bool(Vec2D)> doesEvent, std::function<void(void)> eventCallback) { this->e_doesEvent.push_back(doesEvent); this->e_callback.push_back(eventCallback); }
+	std::function<bool(void)> e_isValid;
+	std::function<unsigned int(void)> e_getZSort;
+	std::vector<std::function<bool(Vec2D)>> e_doesEvent;
+	std::vector<std::function<void(void)>> e_callback;
+};
+
 //あらゆるオブジェクトの基底
-class ObjectBase : public ExternalMinimalController, public ObjectManagementBaseKit {
+class ObjectBase : public ExternalMinimalController, public EventCheck, public ObjectManagementBaseKit {
 private:
 	//外部操作用
 	void setControlRights(ControlStatus status) override { this->control_status = status; }
 
 protected:
 	Vec2D world_pos;
-	std::function<void(void)> after_clicked;
 
 	ControlStatus control_status;//制御権
 
 public:
-	ObjectBase(Vec2D world_pos, unsigned int z_sort) : ObjectManagementBaseKit(z_sort) { this->world_pos = world_pos; this->control_status = ControlStatus::None; this->after_clicked = []() {}; }
+	ObjectBase(Vec2D world_pos, unsigned int z_sort) : EventCheck([&]() {return getValidation(); }, [&]() {return getZSort(); }, [&](Vec2D p) {return doesEvent(p); }, [&]() {eventCallback(); }), ObjectManagementBaseKit(z_sort) { this->world_pos = world_pos; this->control_status = ControlStatus::None;  }
 	virtual ~ObjectBase(){}
 
 	Vec2D getWorldPosition() override final { return this->world_pos; }
 	bool getValidation() override { return this->validation; }
+
+	virtual bool doesEvent(Vec2D e_window_pos) { return true; };
+	virtual void eventCallback() {}
 
 	//外部操作用
 	void setWorldPosition(Vec2D pos) override final { this->world_pos = pos; }
@@ -75,6 +87,9 @@ public:
 	void initialize() override { for (auto it = this->components.begin(); it != this->components.end();) { (*it)->initialize(); } }
 	void update() override { for (auto it = this->components.begin(); it != this->components.end();) { if (!(*it)->getValidation()) { it = this->components.erase(it); } else { (*it)->update(); ++it; } } }
 	void draw(const std::shared_ptr<CameraDrawInterface> &camera) const override { for (auto it = this->components.begin(); it != this->components.end();) (*it)->draw(camera); }
+
+	virtual bool doesEvent(Vec2D e_window_pos) { return true; };
+	virtual void eventCallback() {}
 
 	Vec2D getCenterWorldPosition() { return this->center_world_pos; }
 	bool getValidation() override { return this->validation; }
