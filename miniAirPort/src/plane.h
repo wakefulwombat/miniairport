@@ -3,6 +3,7 @@
 #include "base_objectBase.h"
 #include <vector>
 #include <functional>
+#include "mouseTracer.h"
 
 enum class PlaneCode {
 	BLU,
@@ -18,15 +19,10 @@ enum class PlaneCode {
 };
 
 enum class PlaneStatus {
-	FreeFlightComing,
-	Landing,
-	WaitingTransportToBoarding,
-	TransportToBoarding,
-	Preparating,
-	TransportingToTakeoff,
-	WaitingTakeoff,
-	Takeoffing,
-	FreeFlightAway
+	Prepare,
+	Deperture,
+	Flying,
+	Arrival
 };
 
 class Plane : public ObjectBase, public ImageProperty, public MoveProperty{
@@ -35,6 +31,9 @@ private:
 	const PlaneCode code;
 	PlaneStatus status;
 	unsigned int target_marker_id, time_table_id;
+	unsigned int fuel_per, count;
+
+	std::shared_ptr<MouseTracer> mouceTracer;
 
 	const std::function<bool(void)> isHighSpeedNow;
 

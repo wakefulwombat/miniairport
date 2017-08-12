@@ -344,10 +344,12 @@ void Camera::update(){
 	else if (this->move_count == this->move_count_max) {
 		this->pos_anchor_world_now = this->anchor_target_world_pos_goal;
 	}
+	/*
 	if (this->pos_anchor_world_now.x < this->pos_anchor_window.x) this->pos_anchor_world_now.x = this->pos_anchor_window.x;
 	if (this->pos_anchor_world_now.y < this->pos_anchor_window.y) this->pos_anchor_world_now.y = this->pos_anchor_window.y;
 	if (this->pos_anchor_world_now.x > this->worldSize.width  - this->pos_anchor_window.x) this->pos_anchor_world_now.x = this->worldSize.width  - this->pos_anchor_window.x;
 	if (this->pos_anchor_world_now.y > this->worldSize.height - this->pos_anchor_window.y) this->pos_anchor_world_now.y = this->worldSize.height - this->pos_anchor_window.y;
+	*/
 
 	if (this->zoom_count < this->zoom_count_max) {
 		this->zoom_count++;

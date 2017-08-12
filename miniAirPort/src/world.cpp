@@ -26,6 +26,9 @@ World::World(int stage, std::function<void(const std::shared_ptr<LayerBase>&)> p
 	this->addEventCheck(this->show_arrivalTimeTable);
 	this->addObject(this->show_departureTimeTable);
 	this->addEventCheck(this->show_departureTimeTable);
+	
+	this->addEventCheck([](Vec2D p) {return (Input_T::getEventInterface_mouse()->isDownOnce("left")|| (Input_T::getEventInterface_mouse()->isUpOnce("left"))); }, [&]() {camera->setAnchorWorldPosition(camera->toWorldPosFromWindowPosPx(Input_T::getOperationInterface_mouse()->getPointerPosition())); }, []() {return 2; });
+	this->addEventCheck([](Vec2D p) {return (Input_T::getEventInterface_mouse()->isDown("left")); }, [&]() {this->camera->setAnchorWindowPosition(Input_T::getOperationInterface_mouse()->getPointerPosition()); }, []() {return 1; });
 }
 
 void World::loadStageInfo(int stage) {
@@ -146,13 +149,6 @@ void World::update() {
 	if (this->high_speed->isOn()) this->time_table->changeIncrementMilliSecond(500);
 	else this->time_table->changeIncrementMilliSecond(100);
 	this->time_table->update();
-
-	if (Input_T::getEventInterface_mouse()->isDownOnce("left") || Input_T::getEventInterface_mouse()->isUpOnce("left")) {
-		this->camera->setAnchorWorldPosition(this->camera->toWorldPosFromWindowPosPx(Input_T::getOperationInterface_mouse()->getPointerPosition()));
-	}
-	if (Input_T::getEventInterface_mouse()->isDown("left")) {
-		this->camera->setAnchorWindowPosition(Input_T::getOperationInterface_mouse()->getPointerPosition());
-	}
 	
 	int wheel = Input_T::getOperationInterface_mouse()->getWheelRotationDelta();
 	if (wheel != 0) {

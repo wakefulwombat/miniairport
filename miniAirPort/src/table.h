@@ -8,16 +8,17 @@
 class CellBase : public ObjectBase {
 protected:
 	const Size size;
-	const Color_RGB back_color;
+	Color_RGB back_color;
 	const bool fill;
 
 public:
-	CellBase(Vec2D center, Size cell_size, Color_RGB back_color = Color_RGB(200, 200, 200), bool fill = false) :ObjectBase(center, 10000), size(cell_size), back_color(back_color), fill(fill) {}
+	CellBase(Vec2D center, Size cell_size, Color_RGB back_color = Color_RGB(200, 200, 200), bool fill = false) :ObjectBase(center, 10000), size(cell_size), fill(fill) { this->back_color = back_color; }
 	void initialize() override {}
 	void update() override {}
 	void draw(const std::shared_ptr<CameraDrawInterface> &camera) const override { camera->drawRotateSquareInWorld(this->world_pos, this->size, 0.0, this->back_color, this->fill); }
 
 	Size getSize() { return this->size; }
+	void setBackgroundColor(Color_RGB col) { this->back_color = col; }
 };
 
 class TextCell : public CellBase {
@@ -41,6 +42,14 @@ public:
 	void draw(const std::shared_ptr<CameraDrawInterface> &camera) const override { CellBase::draw(camera); camera->drawImageInWorld(this->world_pos, this->handle, this->img_prop); }
 };
 
+class Row {
+private:
+	const Size cell_size;
+	std::deque<std::shared_ptr<CellBase>> cells;
+
+public:
+
+};
 
 class Column {
 private:
@@ -59,6 +68,8 @@ public:
 	void removeAll() { for (auto it = this->cells.begin(); it != this->cells.end(); ++it) { (*it)->setInvalid(); } this->cells.clear(); this->header->setInvalid(); this->header = nullptr; }
 
 	void changePosition(Vec2D head_center) { this->header->setWorldPosition(head_center); head_center.y += (this->header->getSize().height + this->cell_size.height) / 2; for (auto it = this->cells.begin(); it != this->cells.end(); ++it) { (*it)->setWorldPosition(head_center); head_center.y += this->cell_size.height; } }
+	void changeCellBackgroundColor(Color_RGB col) { for (auto it = this->cells.begin(); it != this->cells.end(); ++it) { (*it)->setBackgroundColor(col); } }
+	void changeCellBackgroundColor(Color_RGB col, unsigned int index) { this->cells[index]->setBackgroundColor(col); }
 
 	int getRowNumberSize() { return this->cells.size(); }
 	int getWidthPixelSize() { return this->header->getSize().width; }
@@ -66,12 +77,16 @@ public:
 	int getHeightPixelSize(int row_max) { return (this->header->getSize().height + this->cell_size.height*row_max); }
 
 	void addObjectToList(unsigned int row_index, const std::function<void(const std::shared_ptr<ObjectBase>&)> addObject) { if (row_index >= this->cells.size()) return; addObject(this->cells[row_index]); }
+
+	const std::shared_ptr<CellBase>& getCellReference(unsigned int index) { return this->cells[index]; }
+	const std::deque<std::shared_ptr<CellBase>>& getColumnReference() { return this->cells; }
 };
 
 
 class Table {
 private:
 	std::deque<std::shared_ptr<Column>> columns;
+	std::deque<std::shared_ptr<CellBase>> selected_cells;
 	const std::function<void(const std::shared_ptr<ObjectBase>&)> addObject;
 	const int header_height, cell_height;
 	const int show_row_max;
@@ -98,4 +113,10 @@ public:
 	int getTableHeightPixel(int row_max) { return (this->header_height + row_max*this->cell_height); }
 
 	void formatTable(Vec2D leftup_world_pos);
+
+	void changeBackgroundColorRow(unsigned int index) {}
+	void changeBackgroundColorColumn(unsigned int index) {}
+
+	const std::deque<std::shared_ptr<CellBase>>& getReferenceColumn(unsigned int index) { this->selected_cells.clear(); this->selected_cells = this->columns[index]->getColumnReference(); return this->selected_cells; }
+	const std::deque<std::shared_ptr<CellBase>>& getReferenceRow(unsigned int index) { this->selected_cells.clear(); for (auto it = this->columns.begin(); it != this->columns.end(); ++it) { this->selected_cells.push_back((*it)->getCellReference(index)); } return this->selected_cells; }
 };
