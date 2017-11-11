@@ -32,11 +32,12 @@ public:
 
 class EventCheck {
 public:
-	EventCheck(std::function<bool(void)> isValid, std::function<unsigned int(void)> getZSort, std::function<bool(Vec2D)> doesEvent, std::function<void(void)> eventCallback) {this->e_isValid = isValid;this->e_getZSort = getZSort;this->addEvent(doesEvent, eventCallback);}
-	void addEvent(std::function<bool(Vec2D)> doesEvent, std::function<void(void)> eventCallback) { this->e_doesEvent.push_back(doesEvent); this->e_callback.push_back(eventCallback); }
+	EventCheck(std::function<bool(void)> isValid, std::function<unsigned int(void)> getZSort, std::function<bool(Vec2D, Vec2D)> e_doesMouseOn, std::function<bool(Vec2D, Vec2D)> doesEvent, std::function<void(void)> eventCallback) { this->e_isValid = isValid; this->e_getZSort = getZSort; this->e_doesMouseOn = e_doesMouseOn; this->addEvent(doesEvent, eventCallback); }
+	void addEvent(std::function<bool(Vec2D, Vec2D)> doesEvent, std::function<void(void)> eventCallback) { this->e_doesEvent.push_back(doesEvent); this->e_callback.push_back(eventCallback); }
 	std::function<bool(void)> e_isValid;
 	std::function<unsigned int(void)> e_getZSort;
-	std::vector<std::function<bool(Vec2D)>> e_doesEvent;
+	std::function<bool(Vec2D, Vec2D)> e_doesMouseOn;
+	std::vector<std::function<bool(Vec2D, Vec2D)>> e_doesEvent;
 	std::vector<std::function<void(void)>> e_callback;
 };
 
@@ -52,13 +53,14 @@ protected:
 	ControlStatus control_status;//êßå‰å†
 
 public:
-	ObjectBase(Vec2D world_pos, unsigned int z_sort) : EventCheck([&]() {return getValidation(); }, [&]() {return getZSort(); }, [&](Vec2D p) {return doesEvent(p); }, [&]() {eventCallback(); }), ObjectManagementBaseKit(z_sort) { this->world_pos = world_pos; this->control_status = ControlStatus::None;  }
+	ObjectBase(Vec2D world_pos, unsigned int z_sort) : EventCheck([&]() {return getValidation(); }, [&]() {return getZSort(); }, [&](Vec2D p_world, Vec2D p_window) {return doesMouseOn(p_world, p_window); }, [&](Vec2D p_world, Vec2D p_window) {return doesEvent(p_world, p_window); }, [&]() {eventCallback(); }), ObjectManagementBaseKit(z_sort) { this->world_pos = world_pos; this->control_status = ControlStatus::None; }
 	virtual ~ObjectBase(){}
 
 	Vec2D getWorldPosition() override final { return this->world_pos; }
 	bool getValidation() override { return this->validation; }
 
-	virtual bool doesEvent(Vec2D e_window_pos) { return true; };
+	virtual bool doesEvent(Vec2D mouse_world_pos, Vec2D mouse_window_pos) { return true; }
+	virtual bool doesMouseOn(Vec2D mouse_world_pos, Vec2D mouse_window_pos) { return false; }
 	virtual void eventCallback() {}
 
 	//äOïîëÄçÏóp
@@ -89,6 +91,7 @@ public:
 	void draw(const std::shared_ptr<CameraDrawInterface> &camera) const override { for (auto it = this->components.begin(); it != this->components.end();) (*it)->draw(camera); }
 
 	virtual bool doesEvent(Vec2D e_window_pos) { return true; };
+	virtual bool doesMouseOn(Vec2D e_mouse_world_pos) { return false; }
 	virtual void eventCallback() {}
 
 	Vec2D getCenterWorldPosition() { return this->center_world_pos; }

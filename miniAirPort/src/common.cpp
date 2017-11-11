@@ -223,6 +223,15 @@ bool Vec2D::isInSquare(Vec2D leftup, Vec2D rightdown)
 	return true;
 }
 
+bool Vec2D::isInSquare(Vec2D center, Size size)
+{
+	if (this->x < center.x - size.width / 2) return false;
+	if (this->x > center.x + size.width / 2) return false;
+	if (this->y < center.y - size.height / 2) return false;
+	if (this->y > center.y + size.height / 2) return false;
+	return true;
+}
+
 Vec2D Vec2D::getRandomOnCircle(double r) {
 	Vec2D tmp;
 	double angle = M_PI * 2.0 * GetRand(3600) / 360;

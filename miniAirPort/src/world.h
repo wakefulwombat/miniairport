@@ -38,6 +38,8 @@ private:
 	void loadStageTimeTable(int stage);
 	void loadStageChip(int stage);
 
+	void checkEvent_backGroundClicked(Vec2D mouse_window_pos) override;
+
 public:
 	World(int stage, std::function<void(const std::shared_ptr<LayerBase>&)> push_layer);
 	void initialize() override { LayerBase::initialize(); }

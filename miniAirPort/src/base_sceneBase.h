@@ -21,6 +21,8 @@ protected:
 	bool allow_click_check_under_layer;//下層レイヤーへのクリック判定を許可するか
 	bool validation;
 
+	virtual void checkEvent_backGroundClicked(Vec2D mouse_window_pos) {};
+
 public:
 	LayerBase(double under_layer_shield_ratio, bool allow_update_under_layer, bool allow_click_check_under_layer, const std::shared_ptr<Camera> &camera) { this->under_layer_shield_ratio = under_layer_shield_ratio; this->allow_update_under_layer = allow_update_under_layer; this->allow_click_check_under_layer = allow_click_check_under_layer; this->camera = camera; this->initialize(); }
 	virtual ~LayerBase() {}
@@ -30,7 +32,7 @@ public:
 	bool getValidation() { return this->validation; }
 	void addObject(const std::shared_ptr<ObjectBase> &obj) { this->objects.push_back(obj); std::sort(this->objects.begin(), this->objects.end(), [](const std::shared_ptr<ObjectManagementBaseKit> &left, const std::shared_ptr<ObjectManagementBaseKit> &right) {return left->getZSort() < right->getZSort(); }); }
 	void addEventCheck(const std::shared_ptr<ObjectBase> &obj) { this->click_checks.push_back(obj); std::sort(this->click_checks.begin(), this->click_checks.end(), [](const std::shared_ptr<EventCheck> &left, const std::shared_ptr<EventCheck> &right) {return left->e_getZSort() > right->e_getZSort(); }); }
-	void addEventCheck(std::function<bool(Vec2D)> doesEvent, std::function<void(void)> eventCallback, std::function<unsigned int(void)> getZSort = []() { return 0; }, std::function<bool(void)> getValidation = []() { return true; }) { this->click_checks.push_back(std::make_shared<EventCheck>(getValidation, getZSort, doesEvent, eventCallback)); std::sort(this->click_checks.begin(), this->click_checks.end(), [](const std::shared_ptr<EventCheck> &left, const std::shared_ptr<EventCheck> &right) {return left->e_getZSort() > right->e_getZSort(); });}
+	//void addEventCheck(std::function<bool(Vec2D)> doesEvent, std::function<void(void)> eventCallback, std::function<bool(Vec2D)>doesMouseOn, std::function<unsigned int(void)> getZSort = []() { return 0; }, std::function<bool(void)> getValidation = []() { return true; }) { this->click_checks.push_back(std::make_shared<EventCheck>(getValidation, getZSort, doesMouseOn, doesEvent, eventCallback)); std::sort(this->click_checks.begin(), this->click_checks.end(), [](const std::shared_ptr<EventCheck> &left, const std::shared_ptr<EventCheck> &right) {return left->e_getZSort() > right->e_getZSort(); });}
 	void popBackObject() { this->objects.pop_back(); }
 	double getShieldRatioOfUnderLayer() { return this->under_layer_shield_ratio; }
 	bool doesAllowedUpdateUnderLayer() { return this->allow_update_under_layer; }
@@ -41,7 +43,7 @@ public:
 	void update() override;
 	virtual void draw() const { for each(std::shared_ptr<ObjectManagementBaseKit> obj in this->objects) { obj->draw(this->camera); } }
 
-	void checkEvent(Vec2D window_pos);
+	void checkEvent(Vec2D mouse_window_pos);
 };
 
 class Layer_NowLoading : public LayerBase {

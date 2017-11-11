@@ -3,6 +3,7 @@
 #include <string>
 
 const static double M_PI = 3.14159265358979;
+class Size;
 
 enum class Direction4 {
 	RIGHT,
@@ -41,6 +42,7 @@ public:
 
 	double getDistance(Vec2D p2);
 	bool isInSquare(Vec2D leftup, Vec2D rightdown);
+	bool isInSquare(Vec2D center, Size size);
 	double toPower();
 	double toNorm();
 	double toAngle();

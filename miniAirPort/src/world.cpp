@@ -25,10 +25,7 @@ World::World(int stage, std::function<void(const std::shared_ptr<LayerBase>&)> p
 	this->addObject(this->show_arrivalTimeTable);
 	this->addEventCheck(this->show_arrivalTimeTable);
 	this->addObject(this->show_departureTimeTable);
-	this->addEventCheck(this->show_departureTimeTable);
-	
-	this->addEventCheck([](Vec2D p) {return (Input_T::getEventInterface_mouse()->isDownOnce("left")|| (Input_T::getEventInterface_mouse()->isUpOnce("left"))); }, [&]() {camera->setAnchorWorldPosition(camera->toWorldPosFromWindowPosPx(Input_T::getOperationInterface_mouse()->getPointerPosition())); }, []() {return 2; });
-	this->addEventCheck([](Vec2D p) {return (Input_T::getEventInterface_mouse()->isDown("left")); }, [&]() {this->camera->setAnchorWindowPosition(Input_T::getOperationInterface_mouse()->getPointerPosition()); }, []() {return 1; });
+	this->addEventCheck(this->show_departureTimeTable);	
 }
 
 void World::loadStageInfo(int stage) {
@@ -142,6 +139,17 @@ void World::loadStageChip(int stage) {
 					std::stoi(col_pass)==0
 				));
 		}
+	}
+}
+
+void World::checkEvent_backGroundClicked(Vec2D mouse_window_pos)
+{
+	if (Input_T::getEventInterface_mouse()->isDownOnce("left") || (Input_T::getEventInterface_mouse()->isUpOnce("left"))) {
+		this->camera->setAnchorWorldPosition(this->camera->toWorldPosFromWindowPosPx(Input_T::getOperationInterface_mouse()->getPointerPosition()));
+	}
+	
+	if (Input_T::getEventInterface_mouse()->isDown("left")){
+		this->camera->setAnchorWindowPosition(Input_T::getOperationInterface_mouse()->getPointerPosition());
 	}
 }
 

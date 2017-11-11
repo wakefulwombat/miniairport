@@ -60,8 +60,8 @@ void SceneBase::update() {
 	this->layers[l - 1]->popBackObject();
 }
 
-void LayerBase::checkEvent(Vec2D window_pos) {
-	Vec2D mouse = this->camera->toWorldPosFromWindowPosPx(window_pos);
+void LayerBase::checkEvent(Vec2D mouse_window_pos) {
+	Vec2D mouse_world_pos = this->camera->toWorldPosFromWindowPosPx(mouse_window_pos);
 	for (auto it = this->click_checks.begin(); it != this->click_checks.end();) {
 		if (!(*it)->e_isValid()) {
 			it = this->click_checks.erase(it);
@@ -69,14 +69,19 @@ void LayerBase::checkEvent(Vec2D window_pos) {
 		}
 		else {
 			for (unsigned int i = 0; i < (*it)->e_doesEvent.size(); ++i) {
-				if ((*it)->e_doesEvent[i](window_pos)) {
-					(*it)->e_callback[i]();
+				if ((*it)->e_doesMouseOn(mouse_world_pos, mouse_window_pos)) {
+					if ((*it)->e_doesEvent[i](mouse_world_pos, mouse_window_pos)) {
+						(*it)->e_callback[i]();
+						return;
+					}
 					return;
 				}
 			}
 			++it;
 		}
 	}
+
+	this->checkEvent_backGroundClicked(mouse_window_pos);
 }
 
 Layer_Pause::Layer_Pause(const Size window_size) : LayerBase(0.5, false, false, std::make_shared<Camera>(window_size)) {

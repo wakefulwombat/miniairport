@@ -44,10 +44,16 @@ public:
 
 class Row {
 private:
-	const Size cell_size;
+	const int height;
 	std::deque<std::shared_ptr<CellBase>> cells;
 
 public:
+	Row(int height, Color_RGB back_color = Color_RGB(200, 200, 200), bool fill = false) :height(height) { this->initialize(); }
+	void initialize() { this->cells.clear(); }
+
+	void pushBackImageCell(Size img_size, int graph_handle, int cell_width = 100, Color_RGB back_color = Color_RGB(200, 200, 200), double img_exp = 1.0, bool fill = false) { std::shared_ptr<ImageCell> cell = std::make_shared<ImageCell>(Vec2D(), Size(cell_width, this->height), img_size, graph_handle, back_color, img_exp, fill); this->cells.push_back(cell); }
+	void pushBackTextCell(std::string text, int cell_width = 100, Color_RGB back_color = Color_RGB(200, 200, 200), Color_RGB text_color = Color_RGB(255, 255, 255), bool fill = false) { std::shared_ptr<TextCell> cell = std::make_shared<TextCell>(Vec2D(), Size(cell_width, this->height), text, back_color, text_color, fill); this->cells.push_back(cell); }
+	void removeAll() { for (auto it = this->cells.begin(); it != this->cells.end(); ++it) { (*it)->setInvalid(); } this->cells.clear(); }
 
 };
 
